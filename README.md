@@ -24,7 +24,7 @@ Use `start --workers 4 --broad-geometries 100 --focused-geometries 2000` to chan
 
 ## Open the results viewer
 
-Double-click **Launch Funnel Lab.vbs**, or run `python app.py`. The UI is now **read-only**: training happens separately in the terminal. Closing the viewer does not stop training. It refreshes the shared database about every two seconds without restarting your replay. Opening the viewer before the first search shows an empty library until results arrive.
+Double-click **Launch Funnel Lab.vbs**, or run `python app.py`. Training happens separately in the terminal. The viewer reads results without changing the search; its explicit history cleanup buttons can delete saved data. Closing the viewer does not stop training. It refreshes the shared database about every two seconds without restarting your replay. Opening the viewer before the first search shows an empty library until results arrive.
 
 Both programs default to `data/funnel_lab.sqlite3` beside their source files, regardless of the terminal's current folder. To use a different database, give both programs `--db PATH`. No internet is needed. On Windows x64 Python 3.12 the included `vendor` folder supplies the physics dependency; for other versions/platforms install `requirements.txt` and omit that folder.
 
@@ -32,7 +32,14 @@ Both programs default to `data/funnel_lab.sqlite3` beside their source files, re
 
 The left sidebar lists geometry candidates. Click one to open its test groups: Broad survey, a Focus round, Finalist screening, or Fresh validation. Each reports completed/expected counts. Click a test to replay its exact geometry, physics settings, and incoming formation. Replay controls include speed, trails, restart, and single stepping. Filter **Jams only** to inspect failures, or **Starred candidates only** to see automatically selected finalists and existing favorites.
 
-The **Training monitor** tab shows saved sessions, progress, and hardest jam cases. **Open validated winner** opens the winner only after fresh validation finishes. Automatic stars mark the top three validated candidates. Different test groups use different environments, so their scores should not be compared directly. Geometry SVG and run JSON/CSV exports remain available; the viewer cannot edit training records or stars.
+The **Training monitor** tab shows saved sessions, progress, and hardest jam cases. **Open validated winner** opens the winner only after fresh validation finishes. Automatic stars mark the top three validated candidates. Different test groups use different environments, so their scores should not be compared directly. Geometry SVG and run JSON/CSV exports remain available; the viewer cannot edit geometries or scores.
+
+## Clear saved data
+
+- **Clear history · keep stars** deletes unstarred candidates and their tests, keeping both manually starred and automatically starred candidates with all their saved tests. The list switches to starred candidates.
+- **Clear starred candidates** deletes starred candidates and their tests, leaving any unstarred candidates. Use both buttons to remove everything.
+
+Both buttons ask for confirmation. Cleanup removes search checkpoints and hard-case history, so old searches cannot resume with missing candidates. Pause training before cleanup; an active trainer blocks deletion. The database is compacted to reclaim disk space. Exported JSON/CSV files and the repository's bundled example reports are separate files and are not removed by these buttons.
 
 ## Adaptive optimizer
 

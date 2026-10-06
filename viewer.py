@@ -62,11 +62,11 @@ class Viewer:
         self.play.configure(text='Pause'); self.sync_geo(); self.draw()
 
     def toggle(self):
-        self.running=not self.running; self.play.configure(text='Pause' if self.running else 'Play')
+        self.running=bool(self.sim) and not self.running; self.play.configure(text='Pause' if self.running else 'Play')
 
     def step_once(self):
         self.running=False; self.play.configure(text='Play')
-        if not self.sim.done: self.sim.step(round(.1/self.settings.dt))
+        if self.sim and not self.sim.done: self.sim.step(round(.1/self.settings.dt))
         self.draw()
 
     def tick(self):

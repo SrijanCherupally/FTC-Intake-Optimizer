@@ -67,6 +67,33 @@ class Library:
                   FROM results t JOIN runs r ON t.run=r.id JOIN candidates c ON c.id=r.candidate
                   WHERE c.session<>'' AND (r.label='Broad survey' OR r.label LIKE 'Focus %')''')
     def close(self): self.db.close()
+    def clear_history(self,mode='unstarred'):
+        """Delete selected history, invalidate checkpoints, and reclaim disk space."""
+        if mode not in ('unstarred','starred','all'): raise ValueError('Unknown cleanup mode')
+        if self.read_only: raise RuntimeError('Cleanup requires a writable connection.')
+        from adaptive import acquire_session_lock
+        leases=[]
+        try:
+            self.db.execute('BEGIN IMMEDIATE')
+            for row in self.sessions():
+                try: leases.append(acquire_session_lock(self.path,row['id']))
+                except RuntimeError:
+                    raise RuntimeError('Pause the trainer before clearing history (train.cmd pause).') from None
+            where={'unstarred':'NOT (starred OR auto_star)','starred':'(starred OR auto_star)','all':'1'}[mode]
+            count=self.db.execute('SELECT COUNT(*) FROM candidates WHERE '+where).fetchone()[0]
+            self.db.execute('DELETE FROM results WHERE run IN (SELECT r.id FROM runs r JOIN candidates c ON c.id=r.candidate WHERE '+where+')')
+            self.db.execute('DELETE FROM runs WHERE candidate IN (SELECT id FROM candidates WHERE '+where+')')
+            self.db.execute('DELETE FROM candidates WHERE '+where)
+            # Checkpoints reference removed candidate IDs and must never resume.
+            for table in ('training_votes','controls','progress','sessions'): self.db.execute('DELETE FROM '+table)
+            self.db.execute("UPDATE candidates SET session=''")
+            self.db.commit()
+        except Exception:
+            self.db.rollback(); raise
+        finally:
+            for lease in leases: lease.close()
+        self.db.execute('VACUUM')
+        return count
     def candidate(self,cid):
         row=self.db.execute('SELECT * FROM candidates WHERE id=?',(cid,)).fetchone()
         if not row: return None

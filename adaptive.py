@@ -163,6 +163,8 @@ class SearchRunner:
         try: lease=acquire_session_lock(self.lib.path,self.sid)
         except Exception: self.lib.close(); raise
         try:
+            if not self.lib.db.execute('SELECT 1 FROM sessions WHERE id=?',(self.sid,)).fetchone():
+                raise RuntimeError('This session was cleared. Start a new search.')
             self.lib.request_pause(self.sid,False)
             training=cases(c.broad_tests,c.seed)
             ctx=mp.get_context('spawn'); worker_stop=ctx.Event()

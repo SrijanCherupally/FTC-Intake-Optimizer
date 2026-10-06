@@ -26,7 +26,7 @@ class App(Viewer):
         self.geo=Geometry(); self.settings=Settings(); self.case=Case(); self.vars={}; self.sim=None
         self.running=False; self.busy=False; self.events=queue.Queue(); self.cancel=threading.Event(); self.job=None
         self.speed_factor=tk.DoubleVar(value=1); self.show_trails=tk.BooleanVar(value=True)
-        self.selected=None; self.selected_run=None; self.visible_results=[]; self.active_session=None
+        self.selected=None; self.selected_run=None; self.visible_results=[]; self.active_session=None; self.run_rows=[]; self.run_names=[]
         self.last_refresh=0.; self.library_dirty=False; self.refresh_pending=None
         self.styles(); self.build(); self.refresh_library()
         candidates=self.lib.candidates()
@@ -84,6 +84,8 @@ class App(Viewer):
         self.candidate_tree=self.tree(side,{'candidate':'Candidate','stage':'Stage'},[195,70]); self.candidate_tree.bind('<<TreeviewSelect>>',self.candidate_clicked)
         self.thumb=tk.Canvas(side,bg=PANEL,height=125,highlightthickness=0); self.thumb.pack(fill='x',padx=14,pady=(8,0))
         if not self.read_only: self.button(side,'★  Toggle favorite',self.toggle_star).pack(fill='x',padx=12,pady=10)
+        self.button(side,'Clear history · keep stars',lambda:self.clear_history('unstarred')).pack(fill='x',padx=12,pady=(8,4))
+        self.button(side,'Clear starred candidates',lambda:self.clear_history('starred')).pack(fill='x',padx=12,pady=(0,10))
         self.text(side,'Auto stars: top fresh-validation results.\nMisses do not affect ranking.',9,MUTED,justify='left').pack(fill='x',padx=14,pady=(0,14))
         right=tk.Frame(body,bg=BG); right.pack(side='left',fill='both',expand=True)
         self.tabs=ttk.Notebook(right); self.tabs.pack(fill='both',expand=True)
@@ -196,7 +198,7 @@ class App(Viewer):
         p=self.optimizer
         self.text(p,'Training runs in the terminal.',20,bold=True).pack(fill='x',padx=22,pady=(20,8))
         self.text(p,'train.cmd start     /     train.cmd pause     /     train.cmd resume',11,CYAN).pack(fill='x',padx=22,pady=8)
-        self.text(p,'This viewer is read-only. Results refresh automatically; closing it leaves training running.',10,MUTED).pack(fill='x',padx=22,pady=8)
+        self.text(p,'Results refresh automatically. History cleanup is available in the sidebar; closing the viewer leaves training running.',10,MUTED).pack(fill='x',padx=22,pady=8)
         self.button(p,'Open validated winner',self.open_winner).pack(anchor='e',padx=22,pady=8)
         self.session_var=tk.StringVar(); self.session_combo=ttk.Combobox(p,textvariable=self.session_var,state='readonly')
         self.session_combo.pack(fill='x',padx=22,pady=8); self.session_combo.bind('<<ComboboxSelected>>',self.session_changed)
@@ -206,6 +208,27 @@ class App(Viewer):
         self.text(p,'Escapes do not affect ranking. Auto stars appear after fresh validation.',10,MUTED).pack(fill='x',padx=22,pady=(0,10))
         frame=tk.Frame(p,bg=PANEL); frame.pack(fill='both',expand=True,padx=22,pady=(0,16))
         self.hard_tree=self.tree(frame,{'case':'Formation','angle':'Entry','line':'Line','offset':'Offset','rate':'Jam rate','count':'Jams / tried'},[220,75,75,75,95,110],height=6)
+
+    def clear_history(self,mode):
+        detail=('Delete unstarred candidates and their tests? Starred candidates and their tests stay.' if mode=='unstarred'
+                else 'Delete starred candidates and all their saved tests? Unstarred candidates stay.')
+        if not messagebox.askyesno('Clear saved history',detail+'\n\nSearch checkpoints will also be cleared. This cannot be undone.'): return
+        writer=None
+        try:
+            writer=Library(self.db_path); count=writer.clear_history(mode)
+        except (sqlite3.Error,RuntimeError) as e:
+            messagebox.showerror('History was not fully cleared',str(e)); return
+        finally:
+            if writer: writer.close()
+        self.scope.set('All candidates'); self.filter_text.set('')
+        self.only_stars.set(mode=='unstarred'); self.poll_external(force=True)
+        self.status.set(f'Cleared {count:,} candidates and reclaimed database space.')
+
+    def empty_selection(self):
+        self.selected=None; self.selected_run=None; self.visible_results=[]; self.run_rows=[]; self.run_names=[]
+        self.running=False; self.sim=None; self.play.configure(text='Play')
+        self.title.set('No saved candidates'); self.candidate_meta.set(''); self.thumb.delete('all'); self.canvas.delete('all'); self.stats.set('')
+        self.run_var.set(''); self.run_combo.configure(values=[]); self.show_run()
 
     def poll_external(self,force=False):
         if not force and time.monotonic()-self.last_refresh<2: return
@@ -222,7 +245,8 @@ class App(Viewer):
             if not force and version==self.db_version: return
             self.db_version=version
             sessions=self.lib.sessions()
-            if not self.active_session and sessions: self.active_session=sessions[0]['id']
+            if self.active_session not in {s['id'] for s in sessions}: self.active_session=sessions[0]['id'] if sessions else None
+            if self.selected and not self.lib.candidate(self.selected): self.empty_selection()
             self.update_session(); self.refresh_library()
             if not self.selected:
                 rows=self.lib.candidates()
@@ -243,7 +267,7 @@ class App(Viewer):
         state=self.lib.state(self.active_session); event=self.lib.progress(self.active_session)
         self.progress_text.set(f'{state["status"]} · {state["state"]["phase"]} — '+event.get('message',''))
         self.progress.configure(maximum=max(1,event.get('total',1)),value=event.get('done',0))
-        self.status.set('Read-only viewer · connected to '+str(self.db_path))
+        self.status.set('Results viewer · connected to '+str(self.db_path))
 
     def schedule_filter(self):
         if self.refresh_pending: self.root.after_cancel(self.refresh_pending)
@@ -357,6 +381,8 @@ class App(Viewer):
         sessions=self.lib.sessions(); self.session_ids=[s['id'] for s in sessions]; self.session_names=[f'{s["id"][-10:]} · {s["status"]} · {json.loads(s["state"])["phase"]}' for s in sessions]
         self.session_combo.configure(values=self.session_names)
         if self.active_session in self.session_ids: self.session_var.set(self.session_names[self.session_ids.index(self.active_session)])
+        else:
+            self.session_var.set(''); self.progress_text.set('No training session yet.'); self.progress.configure(value=0)
         self.refresh_hardness(); self.monitor_progress()
     def session_changed(self,e=None):
         if self.busy: self.update_session(); return
