@@ -1,0 +1,3901 @@
+{
+  "Single ball": {
+    "case": {
+      "name": "Single ball",
+      "angle": 0.0,
+      "offset": 0.0,
+      "spacing": 80.0,
+      "stagger": 0.0,
+      "seed": 1,
+      "orientation": 0.0
+    },
+    "fed": 1,
+    "total": 1,
+    "remaining": 0,
+    "missed": 0,
+    "jam": false,
+    "elapsed": 1.071,
+    "last_exit": 1.071,
+    "largest_gap": 0,
+    "max_stall": 0.0,
+    "slow_fraction": 0.0,
+    "max_overlap_mm": 0.0,
+    "order": [
+      1
+    ]
+  },
+  "Single file": {
+    "case": {
+      "name": "Single file",
+      "angle": 0.0,
+      "offset": 0.0,
+      "spacing": 80.0,
+      "stagger": 0.0,
+      "seed": 1,
+      "orientation": 0.0
+    },
+    "fed": 5,
+    "total": 5,
+    "remaining": 0,
+    "missed": 0,
+    "jam": false,
+    "elapsed": 2.525,
+    "last_exit": 2.525,
+    "largest_gap": 0.364,
+    "max_stall": 0.0,
+    "slow_fraction": 0.0,
+    "max_overlap_mm": 0.0,
+    "order": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "symmetric_jam": {
+    "case": {
+      "name": "Two abreast",
+      "angle": 0.0,
+      "offset": 0.0,
+      "spacing": 74.5,
+      "stagger": 0.0,
+      "seed": 1,
+      "orientation": 0.0
+    },
+    "fed": 0,
+    "total": 2,
+    "remaining": 2,
+    "missed": 0,
+    "jam": true,
+    "elapsed": 8.001,
+    "last_exit": 0,
+    "largest_gap": 0,
+    "max_stall": 7.573,
+    "slow_fraction": 0.962,
+    "max_overlap_mm": 0.1144,
+    "order": []
+  },
+  "convergence": [
+    {
+      "case": {
+        "name": "Single ball",
+        "angle": 0.0,
+        "offset": 0.0,
+        "spacing": 80.0,
+        "stagger": 0.0,
+        "seed": 1,
+        "orientation": 0.0
+      },
+      "standard": {
+        "case": {
+          "name": "Single ball",
+          "angle": 0.0,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 0.0
+        },
+        "fed": 1,
+        "total": 1,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 1.071,
+        "last_exit": 1.071,
+        "largest_gap": 0,
+        "max_stall": 0.0,
+        "slow_fraction": 0.0,
+        "max_overlap_mm": 0.0,
+        "order": [
+          1
+        ]
+      },
+      "half_step": {
+        "case": {
+          "name": "Single ball",
+          "angle": 0.0,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 0.0
+        },
+        "fed": 1,
+        "total": 1,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 1.07,
+        "last_exit": 1.07,
+        "largest_gap": 0,
+        "max_stall": 0.0,
+        "slow_fraction": 0.0,
+        "max_overlap_mm": 0.0,
+        "order": [
+          1
+        ]
+      },
+      "same_outcome": true
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0.0,
+        "offset": 0.0,
+        "spacing": 80.0,
+        "stagger": 0.0,
+        "seed": 1,
+        "orientation": 0.0
+      },
+      "standard": {
+        "case": {
+          "name": "Two abreast",
+          "angle": 0.0,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 0.0
+        },
+        "fed": 2,
+        "total": 2,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 1.905,
+        "last_exit": 1.905,
+        "largest_gap": 0.437,
+        "max_stall": 0.0,
+        "slow_fraction": 0.3873,
+        "max_overlap_mm": 0.1693,
+        "order": [
+          2,
+          1
+        ]
+      },
+      "half_step": {
+        "case": {
+          "name": "Two abreast",
+          "angle": 0.0,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 0.0
+        },
+        "fed": 2,
+        "total": 2,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 1.907,
+        "last_exit": 1.907,
+        "largest_gap": 0.438,
+        "max_stall": 0.0,
+        "slow_fraction": 0.3899,
+        "max_overlap_mm": 0.0701,
+        "order": [
+          2,
+          1
+        ]
+      },
+      "same_outcome": true
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0.0,
+        "offset": 0.0,
+        "spacing": 80.0,
+        "stagger": 0.0,
+        "seed": 1,
+        "orientation": 0.0
+      },
+      "standard": {
+        "case": {
+          "name": "Three abreast",
+          "angle": 0.0,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 0.0
+        },
+        "fed": 3,
+        "total": 3,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 2.121,
+        "last_exit": 2.121,
+        "largest_gap": 0.612,
+        "max_stall": 0.0,
+        "slow_fraction": 0.362,
+        "max_overlap_mm": 0.1995,
+        "order": [
+          2,
+          3,
+          1
+        ]
+      },
+      "half_step": {
+        "case": {
+          "name": "Three abreast",
+          "angle": 0.0,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 0.0
+        },
+        "fed": 3,
+        "total": 3,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 2.121,
+        "last_exit": 2.121,
+        "largest_gap": 0.613,
+        "max_stall": 0.0,
+        "slow_fraction": 0.3642,
+        "max_overlap_mm": 0.0985,
+        "order": [
+          2,
+          3,
+          1
+        ]
+      },
+      "same_outcome": true
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0.0,
+        "offset": 0.0,
+        "spacing": 80.0,
+        "stagger": 0.0,
+        "seed": 1,
+        "orientation": 0.0
+      },
+      "standard": {
+        "case": {
+          "name": "Four abreast",
+          "angle": 0.0,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 0.0
+        },
+        "fed": 1,
+        "total": 4,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 1.715,
+        "largest_gap": 0,
+        "max_stall": 6.265,
+        "slow_fraction": 0.9348,
+        "max_overlap_mm": 0.1693,
+        "order": [
+          3
+        ]
+      },
+      "half_step": {
+        "case": {
+          "name": "Four abreast",
+          "angle": 0.0,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 0.0
+        },
+        "fed": 1,
+        "total": 4,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.0,
+        "last_exit": 1.716,
+        "largest_gap": 0,
+        "max_stall": 6.111,
+        "slow_fraction": 0.9352,
+        "max_overlap_mm": 0.0701,
+        "order": [
+          3
+        ]
+      },
+      "same_outcome": true
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": 0.0,
+        "spacing": 80.0,
+        "stagger": 0.0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "standard": {
+        "case": {
+          "name": "Four abreast",
+          "angle": 25,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 40
+        },
+        "fed": 1,
+        "total": 4,
+        "remaining": 2,
+        "missed": 1,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 1.42,
+        "largest_gap": 0,
+        "max_stall": 6.062,
+        "slow_fraction": 0.788,
+        "max_overlap_mm": 0.1338,
+        "order": [
+          2
+        ]
+      },
+      "half_step": {
+        "case": {
+          "name": "Four abreast",
+          "angle": 25,
+          "offset": 0.0,
+          "spacing": 80.0,
+          "stagger": 0.0,
+          "seed": 1,
+          "orientation": 40
+        },
+        "fed": 1,
+        "total": 4,
+        "remaining": 2,
+        "missed": 1,
+        "jam": true,
+        "elapsed": 8.0,
+        "last_exit": 1.42,
+        "largest_gap": 0,
+        "max_stall": 6.01,
+        "slow_fraction": 0.7883,
+        "max_overlap_mm": 0.0614,
+        "order": [
+          2
+        ]
+      },
+      "same_outcome": true
+    }
+  ],
+  "checks_passed": true,
+  "geometry": {
+    "mount_y": 107.38628,
+    "outer_span": 280.35,
+    "left_lip": 10.0,
+    "right_lip": 4.0,
+    "left_straight": 73.218984,
+    "right_straight": 24.0,
+    "left_radius": 30.0,
+    "right_radius": 30.0,
+    "left_drop": 40.0,
+    "right_drop": 40.0,
+    "left_bow": 0.0,
+    "right_bow": 0.0
+  },
+  "settings": {
+    "speed": 220.0,
+    "friction": 0.25,
+    "response": 0.08,
+    "acceleration": 2500.0,
+    "dt": 0.0010416666666666667,
+    "duration": 8.0,
+    "stall_time": 1.5
+  },
+  "baseline_summary": {
+    "cases": 137,
+    "fed": 214,
+    "total": 411,
+    "jams": 58,
+    "unfinished": 57,
+    "missed": 45,
+    "worst_time": 8.001,
+    "mean_slow": 0.5896817518248175,
+    "max_overlap_mm": 0.2286
+  },
+  "baseline_results": [
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.755,
+      "last_exit": 2.755,
+      "largest_gap": 1.623,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3921,
+      "max_overlap_mm": 0.0842,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.497,
+      "last_exit": 2.497,
+      "largest_gap": 1.301,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3549,
+      "max_overlap_mm": 0.2056,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.235,
+      "last_exit": 2.235,
+      "largest_gap": 0.95,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3327,
+      "max_overlap_mm": 0.0162,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.901,
+      "last_exit": 1.901,
+      "largest_gap": 0.757,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3024,
+      "max_overlap_mm": 0.032,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.686,
+      "last_exit": 1.686,
+      "largest_gap": 0.439,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2804,
+      "max_overlap_mm": 0.0667,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.472,
+      "slow_fraction": 0.9648,
+      "max_overlap_mm": 0.1012,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 3.386,
+      "last_exit": 3.386,
+      "largest_gap": 1.115,
+      "max_stall": 0.0,
+      "slow_fraction": 0.5867,
+      "max_overlap_mm": 0.1817,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.746,
+      "last_exit": 2.746,
+      "largest_gap": 0.891,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4653,
+      "max_overlap_mm": 0.2138,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.731,
+      "last_exit": 1.731,
+      "largest_gap": 0.407,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2238,
+      "max_overlap_mm": 0.1589,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.243,
+      "last_exit": 2.243,
+      "largest_gap": 1.149,
+      "max_stall": 0.0,
+      "slow_fraction": 0.294,
+      "max_overlap_mm": 0.1536,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.977,
+      "last_exit": 1.977,
+      "largest_gap": 0.792,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2695,
+      "max_overlap_mm": 0.1801,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.728,
+      "last_exit": 1.728,
+      "largest_gap": 0.453,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2165,
+      "max_overlap_mm": 0.0304,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.802,
+      "last_exit": 1.802,
+      "largest_gap": 0.661,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2687,
+      "max_overlap_mm": 0.0889,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.728,
+      "last_exit": 1.728,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3116,
+      "max_overlap_mm": 0.1492,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.573,
+      "slow_fraction": 0.963,
+      "max_overlap_mm": 0.0841,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 6.972,
+      "slow_fraction": 0.9511,
+      "max_overlap_mm": 0.108,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.072,
+      "slow_fraction": 0.9532,
+      "max_overlap_mm": 0.0886,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.745,
+      "last_exit": 1.745,
+      "largest_gap": 0.48,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2228,
+      "max_overlap_mm": 0.1613,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.807,
+      "last_exit": 1.807,
+      "largest_gap": 0.691,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2029,
+      "max_overlap_mm": 0.1889,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.661,
+      "last_exit": 1.661,
+      "largest_gap": 0.44,
+      "max_stall": 0.0,
+      "slow_fraction": 0.1739,
+      "max_overlap_mm": 0.1342,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.832,
+      "last_exit": 1.832,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2818,
+      "max_overlap_mm": 0.0733,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.694,
+      "last_exit": 1.694,
+      "largest_gap": 0.536,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2552,
+      "max_overlap_mm": 0.143,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.92,
+      "last_exit": 1.92,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3994,
+      "max_overlap_mm": 0.0662,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.573,
+      "slow_fraction": 0.9658,
+      "max_overlap_mm": 0.039,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.172,
+      "slow_fraction": 0.9547,
+      "max_overlap_mm": 0.1456,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.272,
+      "slow_fraction": 0.9505,
+      "max_overlap_mm": 0.0863,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.611,
+      "last_exit": 1.611,
+      "largest_gap": 0.483,
+      "max_stall": 0.0,
+      "slow_fraction": 0.1271,
+      "max_overlap_mm": 0.0814,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.645,
+      "last_exit": 1.645,
+      "largest_gap": 0.471,
+      "max_stall": 0.0,
+      "slow_fraction": 0.1545,
+      "max_overlap_mm": 0.1344,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.745,
+      "last_exit": 1.745,
+      "largest_gap": 0.466,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2432,
+      "max_overlap_mm": 0.1018,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.953,
+      "last_exit": 1.953,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3316,
+      "max_overlap_mm": 0.1816,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.648,
+      "last_exit": 1.648,
+      "largest_gap": 0.439,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2492,
+      "max_overlap_mm": 0.0723,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.472,
+      "slow_fraction": 0.9624,
+      "max_overlap_mm": 0.1383,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.472,
+      "slow_fraction": 0.967,
+      "max_overlap_mm": 0.1872,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.372,
+      "slow_fraction": 0.9559,
+      "max_overlap_mm": 0.1626,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 2,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 1.762,
+      "last_exit": 1.762,
+      "largest_gap": 0,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2186,
+      "max_overlap_mm": 0.0502,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.903,
+      "last_exit": 1.903,
+      "largest_gap": 0.804,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2263,
+      "max_overlap_mm": 0.1374,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.544,
+      "last_exit": 1.544,
+      "largest_gap": 0.361,
+      "max_stall": 0.0,
+      "slow_fraction": 0.1233,
+      "max_overlap_mm": 0.1075,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.671,
+      "last_exit": 1.671,
+      "largest_gap": 0.424,
+      "max_stall": 0.0,
+      "slow_fraction": 0.1907,
+      "max_overlap_mm": 0.0908,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.06,
+      "last_exit": 2.06,
+      "largest_gap": 0.476,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3637,
+      "max_overlap_mm": 0.0677,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.755,
+      "last_exit": 1.755,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2767,
+      "max_overlap_mm": 0.1056,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 2,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.573,
+      "slow_fraction": 0.9655,
+      "max_overlap_mm": 0.1329,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.676,
+      "last_exit": 1.676,
+      "largest_gap": 0.48,
+      "max_stall": 0.0,
+      "slow_fraction": 0.269,
+      "max_overlap_mm": 0.1204,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.97,
+      "last_exit": 1.97,
+      "largest_gap": 0.481,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3176,
+      "max_overlap_mm": 0.1852,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.137,
+      "last_exit": 2.137,
+      "largest_gap": 0.917,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2927,
+      "max_overlap_mm": 0.1485,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Two abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 2,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.358,
+      "last_exit": 2.358,
+      "largest_gap": 1.23,
+      "max_stall": 0.0,
+      "slow_fraction": 0.323,
+      "max_overlap_mm": 0.0548,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.369,
+      "last_exit": 2.369,
+      "largest_gap": 1.129,
+      "max_stall": 0.0,
+      "slow_fraction": 0.27,
+      "max_overlap_mm": 0.0746,
+      "order": [
+        3,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.104,
+      "last_exit": 2.104,
+      "largest_gap": 0.775,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2688,
+      "max_overlap_mm": 0.0826,
+      "order": [
+        3,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.302,
+      "last_exit": 2.036,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3487,
+      "max_overlap_mm": 0.1752,
+      "order": [
+        3,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.472,
+      "slow_fraction": 0.9718,
+      "max_overlap_mm": 0.1357,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.426,
+      "last_exit": 2.426,
+      "largest_gap": 0.536,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4625,
+      "max_overlap_mm": 0.1695,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.578,
+      "last_exit": 2.578,
+      "largest_gap": 0.993,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4528,
+      "max_overlap_mm": 0.1735,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 3.827,
+      "last_exit": 3.827,
+      "largest_gap": 1.262,
+      "max_stall": 0.0,
+      "slow_fraction": 0.5952,
+      "max_overlap_mm": 0.2286,
+      "order": [
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 3.24,
+      "last_exit": 3.24,
+      "largest_gap": 0.72,
+      "max_stall": 0.0,
+      "slow_fraction": 0.5434,
+      "max_overlap_mm": 0.2228,
+      "order": [
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 4.083,
+      "last_exit": 4.083,
+      "largest_gap": 0.848,
+      "max_stall": 0.101,
+      "slow_fraction": 0.6073,
+      "max_overlap_mm": 0.1738,
+      "order": [
+        1,
+        3,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 3.242,
+      "last_exit": 3.242,
+      "largest_gap": 1.386,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3856,
+      "max_overlap_mm": 0.1573,
+      "order": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.927,
+      "last_exit": 2.927,
+      "largest_gap": 1.098,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3641,
+      "max_overlap_mm": 0.1257,
+      "order": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.172,
+      "slow_fraction": 0.9402,
+      "max_overlap_mm": 0.144,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.573,
+      "slow_fraction": 0.9703,
+      "max_overlap_mm": 0.1423,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.104,
+      "last_exit": 2.104,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3613,
+      "max_overlap_mm": 0.1747,
+      "order": [
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.144,
+      "largest_gap": 0,
+      "max_stall": 6.77,
+      "slow_fraction": 0.9034,
+      "max_overlap_mm": 0.1953,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.781,
+      "last_exit": 2.781,
+      "largest_gap": 0.485,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4539,
+      "max_overlap_mm": 0.167,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.931,
+      "largest_gap": 0,
+      "max_stall": 5.961,
+      "slow_fraction": 0.8709,
+      "max_overlap_mm": 0.0855,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 2.427,
+      "largest_gap": 0,
+      "max_stall": 5.456,
+      "slow_fraction": 0.8776,
+      "max_overlap_mm": 0.1474,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.821,
+      "last_exit": 2.821,
+      "largest_gap": 1.023,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3674,
+      "max_overlap_mm": 0.0797,
+      "order": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.172,
+      "slow_fraction": 0.9457,
+      "max_overlap_mm": 0.1504,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.172,
+      "slow_fraction": 0.9432,
+      "max_overlap_mm": 0.1879,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.573,
+      "slow_fraction": 0.9716,
+      "max_overlap_mm": 0.1888,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.111,
+      "last_exit": 2.111,
+      "largest_gap": 0.593,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3564,
+      "max_overlap_mm": 0.066,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.165,
+      "largest_gap": 0,
+      "max_stall": 6.77,
+      "slow_fraction": 0.9057,
+      "max_overlap_mm": 0.04,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.534,
+      "largest_gap": 0,
+      "max_stall": 6.366,
+      "slow_fraction": 0.8669,
+      "max_overlap_mm": 0.1909,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.774,
+      "largest_gap": 0,
+      "max_stall": 6.164,
+      "slow_fraction": 0.874,
+      "max_overlap_mm": 0.1557,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.272,
+      "slow_fraction": 0.947,
+      "max_overlap_mm": 0.1327,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.437,
+      "last_exit": 2.437,
+      "largest_gap": 0.682,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2845,
+      "max_overlap_mm": 0.1406,
+      "order": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 6.871,
+      "slow_fraction": 0.9441,
+      "max_overlap_mm": 0.1714,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.77,
+      "last_exit": 2.77,
+      "largest_gap": 0.484,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4459,
+      "max_overlap_mm": 0.128,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.454,
+      "last_exit": 2.454,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4729,
+      "max_overlap_mm": 0.0805,
+      "order": [
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.473,
+      "last_exit": 2.473,
+      "largest_gap": 0.924,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4309,
+      "max_overlap_mm": 0.1788,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.221,
+      "largest_gap": 0,
+      "max_stall": 6.669,
+      "slow_fraction": 0.9047,
+      "max_overlap_mm": 0.1519,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.583,
+      "last_exit": 2.583,
+      "largest_gap": 1.105,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3784,
+      "max_overlap_mm": 0.0627,
+      "order": [
+        2,
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 2.041,
+      "largest_gap": 0,
+      "max_stall": 5.86,
+      "slow_fraction": 0.8727,
+      "max_overlap_mm": 0.1598,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.072,
+      "slow_fraction": 0.9465,
+      "max_overlap_mm": 0.1573,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.143,
+      "last_exit": 2.143,
+      "largest_gap": 0.43,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2382,
+      "max_overlap_mm": 0.1514,
+      "order": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 3,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 3.453,
+      "last_exit": 3.453,
+      "largest_gap": 0.782,
+      "max_stall": 0.101,
+      "slow_fraction": 0.5349,
+      "max_overlap_mm": 0.1847,
+      "order": [
+        3,
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 2,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 4.85,
+      "slow_fraction": 0.8705,
+      "max_overlap_mm": 0.1732,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.165,
+      "last_exit": 2.165,
+      "largest_gap": 0.439,
+      "max_stall": 0.0,
+      "slow_fraction": 0.382,
+      "max_overlap_mm": 0.1678,
+      "order": [
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.173,
+      "largest_gap": 0,
+      "max_stall": 6.77,
+      "slow_fraction": 0.9038,
+      "max_overlap_mm": 0.1336,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 3,
+      "remaining": 2,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.331,
+      "largest_gap": 0,
+      "max_stall": 6.568,
+      "slow_fraction": 0.9038,
+      "max_overlap_mm": 0.1779,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.302,
+      "last_exit": 2.248,
+      "largest_gap": 0.437,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3848,
+      "max_overlap_mm": 0.1033,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 3,
+      "remaining": 2,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 6.164,
+      "slow_fraction": 0.8691,
+      "max_overlap_mm": 0.1003,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Three abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 3,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.027,
+      "last_exit": 2.027,
+      "largest_gap": 0.699,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2363,
+      "max_overlap_mm": 0.1497,
+      "order": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 4,
+      "remaining": 0,
+      "missed": 2,
+      "jam": false,
+      "elapsed": 1.981,
+      "last_exit": 1.981,
+      "largest_gap": 0.583,
+      "max_stall": 0.0,
+      "slow_fraction": 0.2639,
+      "max_overlap_mm": 0.151,
+      "order": [
+        4,
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 3,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 6.265,
+      "slow_fraction": 0.9179,
+      "max_overlap_mm": 0.1455,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 4,
+      "remaining": 0,
+      "missed": 2,
+      "jam": false,
+      "elapsed": 3.205,
+      "last_exit": 3.205,
+      "largest_gap": 1.051,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4373,
+      "max_overlap_mm": 0.1436,
+      "order": [
+        4,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.486,
+      "last_exit": 2.486,
+      "largest_gap": 0.906,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4359,
+      "max_overlap_mm": 0.1511,
+      "order": [
+        3,
+        4,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.278,
+      "largest_gap": 0,
+      "max_stall": 6.669,
+      "slow_fraction": 0.9251,
+      "max_overlap_mm": 0.145,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 4,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.272,
+      "slow_fraction": 0.9762,
+      "max_overlap_mm": 0.1598,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 4,
+      "remaining": 0,
+      "missed": 2,
+      "jam": false,
+      "elapsed": 4.147,
+      "last_exit": 4.147,
+      "largest_gap": 1.23,
+      "max_stall": 0.0,
+      "slow_fraction": 0.5114,
+      "max_overlap_mm": 0.1884,
+      "order": [
+        3,
+        4
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 4,
+      "remaining": 0,
+      "missed": 2,
+      "jam": false,
+      "elapsed": 3.976,
+      "last_exit": 3.976,
+      "largest_gap": 1.023,
+      "max_stall": 0.0,
+      "slow_fraction": 0.5233,
+      "max_overlap_mm": 0.2205,
+      "order": [
+        3,
+        4
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 3,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 5.052,
+      "slow_fraction": 0.8718,
+      "max_overlap_mm": 0.1754,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 3,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 6.062,
+      "slow_fraction": 0.8789,
+      "max_overlap_mm": 0.1803,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 3,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 5.961,
+      "slow_fraction": 0.8824,
+      "max_overlap_mm": 0.2016,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.615,
+      "last_exit": 2.401,
+      "largest_gap": 0.575,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3267,
+      "max_overlap_mm": 0.1903,
+      "order": [
+        3,
+        4,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 2,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.139,
+      "largest_gap": 0,
+      "max_stall": 5.355,
+      "slow_fraction": 0.8659,
+      "max_overlap_mm": 0.1271,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.414,
+      "largest_gap": 0,
+      "max_stall": 6.467,
+      "slow_fraction": 0.934,
+      "max_overlap_mm": 0.1307,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 4,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.272,
+      "slow_fraction": 0.9756,
+      "max_overlap_mm": 0.1067,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.881,
+      "largest_gap": 0,
+      "max_stall": 6.062,
+      "slow_fraction": 0.8769,
+      "max_overlap_mm": 0.201,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 2.419,
+      "largest_gap": 0,
+      "max_stall": 5.557,
+      "slow_fraction": 0.8827,
+      "max_overlap_mm": 0.2086,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": -25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 4,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 4.345,
+      "slow_fraction": 0.9342,
+      "max_overlap_mm": 0.2094,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 3,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 5.759,
+      "slow_fraction": 0.8841,
+      "max_overlap_mm": 0.1757,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 4,
+      "total": 4,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 3.439,
+      "last_exit": 3.439,
+      "largest_gap": 1.006,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3989,
+      "max_overlap_mm": 0.1986,
+      "order": [
+        3,
+        4,
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.525,
+      "largest_gap": 0,
+      "max_stall": 6.366,
+      "slow_fraction": 0.8802,
+      "max_overlap_mm": 0.1786,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.16,
+      "largest_gap": 0,
+      "max_stall": 6.669,
+      "slow_fraction": 0.9309,
+      "max_overlap_mm": 0.143,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.732,
+      "largest_gap": 0,
+      "max_stall": 6.164,
+      "slow_fraction": 0.935,
+      "max_overlap_mm": 0.133,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 4,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.172,
+      "slow_fraction": 0.9775,
+      "max_overlap_mm": 0.122,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 4,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 6.972,
+      "slow_fraction": 0.9295,
+      "max_overlap_mm": 0.1568,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 4,
+      "total": 4,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.907,
+      "last_exit": 2.907,
+      "largest_gap": 0.516,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3688,
+      "max_overlap_mm": 0.153,
+      "order": [
+        2,
+        3,
+        1,
+        4
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 0,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.554,
+      "largest_gap": 0,
+      "max_stall": 5.153,
+      "slow_fraction": 0.884,
+      "max_overlap_mm": 0.1647,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 2.01,
+      "largest_gap": 0,
+      "max_stall": 5.961,
+      "slow_fraction": 0.8767,
+      "max_overlap_mm": 0.1973,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 4,
+      "total": 4,
+      "remaining": 0,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 6.528,
+      "last_exit": 6.528,
+      "largest_gap": 3.326,
+      "max_stall": 1.516,
+      "slow_fraction": 0.6752,
+      "max_overlap_mm": 0.2098,
+      "order": [
+        3,
+        2,
+        4,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 4,
+      "total": 4,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 4.641,
+      "last_exit": 4.641,
+      "largest_gap": 0.825,
+      "max_stall": 0.101,
+      "slow_fraction": 0.619,
+      "max_overlap_mm": 0.1903,
+      "order": [
+        3,
+        2,
+        1,
+        4
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 3.381,
+      "last_exit": 3.381,
+      "largest_gap": 1.734,
+      "max_stall": 0.0,
+      "slow_fraction": 0.5747,
+      "max_overlap_mm": 0.1534,
+      "order": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 4,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.372,
+      "slow_fraction": 0.9746,
+      "max_overlap_mm": 0.1383,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.615,
+      "last_exit": 2.382,
+      "largest_gap": 0.536,
+      "max_stall": 0.0,
+      "slow_fraction": 0.51,
+      "max_overlap_mm": 0.1872,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.615,
+      "last_exit": 2.503,
+      "largest_gap": 0.665,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3457,
+      "max_overlap_mm": 0.125,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 2,
+      "missed": 1,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.43,
+      "largest_gap": 0,
+      "max_stall": 5.961,
+      "slow_fraction": 0.7955,
+      "max_overlap_mm": 0.156,
+      "order": [
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 25,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 2,
+      "total": 4,
+      "remaining": 0,
+      "missed": 2,
+      "jam": false,
+      "elapsed": 2.984,
+      "last_exit": 2.984,
+      "largest_gap": 1.339,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3684,
+      "max_overlap_mm": 0.1096,
+      "order": [
+        2,
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 4.226,
+      "last_exit": 4.226,
+      "largest_gap": 0.902,
+      "max_stall": 0.0,
+      "slow_fraction": 0.5582,
+      "max_overlap_mm": 0.1809,
+      "order": [
+        1,
+        4,
+        2
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 3.606,
+      "last_exit": 3.606,
+      "largest_gap": 0.507,
+      "max_stall": 0.0,
+      "slow_fraction": 0.5369,
+      "max_overlap_mm": 0.1679,
+      "order": [
+        2,
+        1,
+        4
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": -40
+      },
+      "fed": 2,
+      "total": 4,
+      "remaining": 0,
+      "missed": 2,
+      "jam": false,
+      "elapsed": 3.146,
+      "last_exit": 3.146,
+      "largest_gap": 0.705,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4652,
+      "max_overlap_mm": 0.1873,
+      "order": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 1,
+      "total": 4,
+      "remaining": 3,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 1.314,
+      "largest_gap": 0,
+      "max_stall": 6.568,
+      "slow_fraction": 0.9262,
+      "max_overlap_mm": 0.1499,
+      "order": [
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 4,
+      "missed": 0,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 7.472,
+      "slow_fraction": 0.9749,
+      "max_overlap_mm": 0.1329,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 0
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.121,
+      "last_exit": 2.121,
+      "largest_gap": 0.486,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3837,
+      "max_overlap_mm": 0.1204,
+      "order": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": -20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 2.79,
+      "last_exit": 2.79,
+      "largest_gap": 0.766,
+      "max_stall": 0.0,
+      "slow_fraction": 0.3994,
+      "max_overlap_mm": 0.0977,
+      "order": [
+        2,
+        1,
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": 0,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 3,
+      "total": 4,
+      "remaining": 0,
+      "missed": 1,
+      "jam": false,
+      "elapsed": 3.334,
+      "last_exit": 3.334,
+      "largest_gap": 1.298,
+      "max_stall": 0.0,
+      "slow_fraction": 0.4193,
+      "max_overlap_mm": 0.1662,
+      "order": [
+        2,
+        1,
+        3
+      ]
+    },
+    {
+      "case": {
+        "name": "Four abreast",
+        "angle": 45,
+        "offset": 20,
+        "spacing": 78,
+        "stagger": 0,
+        "seed": 1,
+        "orientation": 40
+      },
+      "fed": 0,
+      "total": 4,
+      "remaining": 2,
+      "missed": 2,
+      "jam": true,
+      "elapsed": 8.001,
+      "last_exit": 0,
+      "largest_gap": 0,
+      "max_stall": 5.961,
+      "slow_fraction": 0.8484,
+      "max_overlap_mm": 0.142,
+      "order": []
+    },
+    {
+      "case": {
+        "name": "Single ball",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 80.0,
+        "stagger": 0.0,
+        "seed": 1,
+        "orientation": 0.0
+      },
+      "fed": 1,
+      "total": 1,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 1.071,
+      "last_exit": 1.071,
+      "largest_gap": 0,
+      "max_stall": 0.0,
+      "slow_fraction": 0.0,
+      "max_overlap_mm": 0.0,
+      "order": [
+        1
+      ]
+    },
+    {
+      "case": {
+        "name": "Single file",
+        "angle": 0,
+        "offset": 0,
+        "spacing": 80.0,
+        "stagger": 0.0,
+        "seed": 1,
+        "orientation": 0.0
+      },
+      "fed": 5,
+      "total": 5,
+      "remaining": 0,
+      "missed": 0,
+      "jam": false,
+      "elapsed": 2.525,
+      "last_exit": 2.525,
+      "largest_gap": 0.364,
+      "max_stall": 0.0,
+      "slow_fraction": 0.0,
+      "max_overlap_mm": 0.0,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
+}
