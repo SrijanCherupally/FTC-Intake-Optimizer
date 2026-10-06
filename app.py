@@ -1,4 +1,5 @@
 """Funnel Lab candidate studio with a persistent adaptive search library."""
+import argparse, sqlite3
 import csv, json, multiprocessing as mp, queue, sys, threading, time
 from pathlib import Path
 from dataclasses import asdict
@@ -6,7 +7,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from geometry import Geometry
 from physics import Settings, Case, PATTERNS, Simulation, suite
-from viewer import Viewer
+from viewer import Viewer, write_svg
 from library import Library, metrics
 from adaptive import SearchConfig, SearchRunner, create_session
 from search import evaluate
@@ -15,17 +16,24 @@ HERE=Path(__file__).resolve().parent
 BG='#0b1020'; PANEL='#131d31'; CARD='#19253c'; TEXT='#e8effc'; MUTED='#90a2bf'; CYAN='#67ddd0'; GOLD='#f6c879'; RED='#fb9eaa'
 
 class App(Viewer):
-    def __init__(self,root,db_path=None):
-        self.root=root; root.title('Funnel Lab · Candidate Studio')
+    def __init__(self,root,db_path=None,read_only=True):
+        self.read_only=read_only; self.db_version=None
+        self.root=root; root.title('Funnel Lab · Results Viewer' if read_only else 'Funnel Lab · Candidate Studio')
         root.geometry(f'{min(1520,root.winfo_screenwidth()-60)}x{min(970,root.winfo_screenheight()-90)}+20+20'); root.minsize(1100,740); root.configure(bg=BG)
-        self.db_path=Path(db_path or HERE/'data'/'funnel_lab.sqlite3'); self.lib=Library(self.db_path); self.lib.import_legacy(HERE)
-        if not self.lib.candidates(): self.lib.add('Original CAD',Geometry().dict(),asdict(Settings()),cid='original-cad')
+        self.db_path=Path(db_path or HERE/'data'/'funnel_lab.sqlite3'); self.lib=Library(self.db_path,read_only=read_only)
+        if not read_only: self.lib.import_legacy(HERE)
+        if not read_only and not self.lib.candidates(): self.lib.add('Original CAD',Geometry().dict(),asdict(Settings()),cid='original-cad')
         self.geo=Geometry(); self.settings=Settings(); self.case=Case(); self.vars={}; self.sim=None
         self.running=False; self.busy=False; self.events=queue.Queue(); self.cancel=threading.Event(); self.job=None
         self.speed_factor=tk.DoubleVar(value=1); self.show_trails=tk.BooleanVar(value=True)
         self.selected=None; self.selected_run=None; self.visible_results=[]; self.active_session=None
         self.last_refresh=0.; self.library_dirty=False; self.refresh_pending=None
-        self.styles(); self.build(); self.refresh_library(); self.select_candidate('original-cad')
+        self.styles(); self.build(); self.refresh_library()
+        candidates=self.lib.candidates()
+        if candidates: self.select_candidate(candidates[0]['id'])
+        else:
+            self.sync_inputs(); self.reset(); self.running=False; self.play.configure(text='Play')
+            self.title.set('Waiting for training results'); self.status.set('Start training with train.cmd start. Results appear here automatically.')
         sessions=self.lib.sessions()
         if sessions: self.active_session=sessions[0]['id']; self.update_session()
         self.last_clock=time.perf_counter(); self.accumulator=0.; root.protocol('WM_DELETE_WINDOW',self.close); self.tick()
@@ -61,7 +69,7 @@ class App(Viewer):
 
     def build(self):
         head=tk.Frame(self.root,bg=BG); head.pack(fill='x',padx=24,pady=(18,14))
-        self.text(head,'FUNNEL LAB',22,bold=True).pack(side='left'); self.text(head,'  /  candidate studio',12,MUTED).pack(side='left')
+        self.text(head,'FUNNEL LAB',22,bold=True).pack(side='left'); self.text(head,'  /  results viewer' if self.read_only else '  /  candidate studio',12,MUTED).pack(side='left')
         self.text(head,'74 mm balls   /   75 mm outlet   /   168 mm mounts',10,CYAN,True).pack(side='right')
         body=tk.Frame(self.root,bg=BG); body.pack(fill='both',expand=True,padx=18,pady=(0,14))
         side=tk.Frame(body,bg=PANEL,width=300); side.pack(side='left',fill='y',padx=(0,14)); side.pack_propagate(False)
@@ -75,19 +83,19 @@ class App(Viewer):
         ttk.Checkbutton(side,text='Starred candidates only',variable=self.only_stars,command=self.refresh_library).pack(anchor='w',padx=14,pady=(0,10))
         self.candidate_tree=self.tree(side,{'candidate':'Candidate','stage':'Stage'},[195,70]); self.candidate_tree.bind('<<TreeviewSelect>>',self.candidate_clicked)
         self.thumb=tk.Canvas(side,bg=PANEL,height=125,highlightthickness=0); self.thumb.pack(fill='x',padx=14,pady=(8,0))
-        self.button(side,'★  Toggle favorite',self.toggle_star).pack(fill='x',padx=12,pady=10)
+        if not self.read_only: self.button(side,'★  Toggle favorite',self.toggle_star).pack(fill='x',padx=12,pady=10)
         self.text(side,'Auto stars: top fresh-validation results.\nMisses do not affect ranking.',9,MUTED,justify='left').pack(fill='x',padx=14,pady=(0,14))
         right=tk.Frame(body,bg=BG); right.pack(side='left',fill='both',expand=True)
         self.tabs=ttk.Notebook(right); self.tabs.pack(fill='both',expand=True)
         self.overview=tk.Frame(self.tabs,bg=PANEL); self.live=tk.Frame(self.tabs,bg=PANEL); self.optimizer=tk.Frame(self.tabs,bg=PANEL)
-        for frame,title in [(self.overview,'Candidate & tests'),(self.live,'Live simulation'),(self.optimizer,'Adaptive optimizer')]: self.tabs.add(frame,text=title)
+        for frame,title in [(self.overview,'Candidate & tests'),(self.live,'Replay' if self.read_only else 'Live simulation'),(self.optimizer,'Training monitor' if self.read_only else 'Adaptive optimizer')]: self.tabs.add(frame,text=title)
         self.build_overview(); self.build_live(); self.build_optimizer()
         self.status=tk.StringVar(value='Select a geometry to inspect its test runs.'); self.text(right,var=self.status,size=9,color=MUTED,wraplength=1000).pack(fill='x',pady=(10,0))
 
     def build_overview(self):
         top=tk.Frame(self.overview,bg=PANEL); top.pack(fill='x',padx=20,pady=(18,12))
         self.title=tk.StringVar(value='Select a candidate'); self.text(top,var=self.title,size=20,bold=True).pack(side='left')
-        self.button(top,'Open live view',lambda:self.tabs.select(self.live)).pack(side='right')
+        self.button(top,'Open replay' if self.read_only else 'Open live view',lambda:self.tabs.select(self.live)).pack(side='right')
         self.candidate_meta=tk.StringVar(); self.text(self.overview,var=self.candidate_meta,size=10,color=MUTED).pack(fill='x',padx=20,pady=(0,12))
         cards=tk.Frame(self.overview,bg=PANEL); cards.pack(fill='x',padx=20,pady=(0,14)); self.card_vars={}
         for i,(key,label,color) in enumerate([('jamfree','JAM-FREE TESTS',CYAN),('jams','JAMS',RED),('runs','TESTS FINISHED',TEXT),('misses','MISSED · NOT SCORED',MUTED)]):
@@ -105,6 +113,8 @@ class App(Viewer):
         self.text(self.overview,'Click a test to replay this candidate’s exact geometry and physics.',10,MUTED).pack(fill='x',padx=20,pady=(0,14))
 
     def build_live(self):
+        if self.read_only:
+            self.build_replay(); return
         pane=tk.PanedWindow(self.live,orient='horizontal',bg=PANEL,sashwidth=8); pane.pack(fill='both',expand=True,padx=10,pady=10)
         left=tk.Frame(pane,bg=PANEL); pane.add(left,width=295,minsize=285)
         sc=tk.Canvas(left,bg=PANEL,highlightthickness=0); sb=ttk.Scrollbar(left,command=sc.yview); sb.pack(side='right',fill='y'); sc.pack(fill='both',expand=True); sc.configure(yscrollcommand=sb.set)
@@ -132,6 +142,8 @@ class App(Viewer):
         self.text(right,'Uncalibrated 2D physics · fixed friction · finite roller drive',9,MUTED).pack(fill='x',pady=8)
 
     def build_optimizer(self):
+        if self.read_only:
+            self.build_monitor(); return
         p=self.optimizer
         self.text(p,'Find the shapes that stop jamming.',20,bold=True).pack(fill='x',padx=22,pady=(20,6))
         self.text(p,'Survey widely → learn the jam cases → refine → validate on fresh tests',11,MUTED).pack(fill='x',padx=22,pady=(0,16))
@@ -155,6 +167,83 @@ class App(Viewer):
         self.text(p,'Each geometry votes once per test. Escaped balls are never penalized.',9,MUTED).pack(fill='x',padx=22,pady=(0,8))
         frame=tk.Frame(p,bg=PANEL); frame.pack(fill='both',expand=True,padx=22,pady=(0,14))
         self.hard_tree=self.tree(frame,{'case':'Formation','angle':'Entry','line':'Line','offset':'Offset','rate':'Jam rate','count':'Jams / tried'},[220,75,75,75,95,110],height=6)
+
+    def export_svg(self):
+        if not self.read_only: return super().export_svg()
+        if not self.selected: return
+        path=filedialog.asksaveasfilename(initialdir=HERE,defaultextension='.svg',initialfile='funnel_geometry.svg')
+        if path: write_svg(self.geo,path); self.status.set('Exported the selected geometry in mm.')
+
+    def build_replay(self):
+        # Shared playback methods use these values, but the viewer never edits them.
+        values={**self.geo.dict(),**asdict(self.settings),**asdict(self.case),'left_angle':0,'right_angle':0}
+        self.vars={k:tk.StringVar(value=str(v)) for k,v in values.items()}; self.pattern=tk.StringVar(value=self.case.name)
+        right=tk.Frame(self.live,bg=PANEL); right.pack(fill='both',expand=True,padx=20,pady=16)
+        self.text(right,'Replay a saved test',20,bold=True).pack(fill='x')
+        self.text(right,'Choose a candidate, then click one of its tests. Geometry and physics match that saved run.',10,MUTED).pack(fill='x',pady=(5,14))
+        bar=tk.Frame(right,bg=PANEL); bar.pack(fill='x')
+        self.play=self.button(bar,'Play',self.toggle); self.play.pack(side='left',padx=3)
+        self.button(bar,'Restart',self.reset).pack(side='left',padx=3); self.button(bar,'Step',self.step_once).pack(side='left',padx=3)
+        ttk.Combobox(bar,textvariable=self.speed_factor,values=[.25,.5,1,2,4],width=4,state='readonly').pack(side='left',padx=8)
+        ttk.Checkbutton(bar,text='Trails',variable=self.show_trails).pack(side='left')
+        self.button(bar,'Export geometry SVG',self.export_svg).pack(side='right')
+        self.stats=tk.StringVar(); self.text(right,var=self.stats,size=10).pack(fill='x',pady=12)
+        self.canvas=tk.Canvas(right,bg='#101c2e',highlightthickness=0); self.canvas.pack(fill='both',expand=True)
+        self.canvas.bind('<Configure>',lambda e:self.draw())
+        self.text(right,'Uncalibrated 2D physics · fixed friction · finite roller drive',9,MUTED).pack(fill='x',pady=8)
+
+    def build_monitor(self):
+        p=self.optimizer
+        self.text(p,'Training runs in the terminal.',20,bold=True).pack(fill='x',padx=22,pady=(20,8))
+        self.text(p,'train.cmd start     /     train.cmd pause     /     train.cmd resume',11,CYAN).pack(fill='x',padx=22,pady=8)
+        self.text(p,'This viewer is read-only. Results refresh automatically; closing it leaves training running.',10,MUTED).pack(fill='x',padx=22,pady=8)
+        self.button(p,'Open validated winner',self.open_winner).pack(anchor='e',padx=22,pady=8)
+        self.session_var=tk.StringVar(); self.session_combo=ttk.Combobox(p,textvariable=self.session_var,state='readonly')
+        self.session_combo.pack(fill='x',padx=22,pady=8); self.session_combo.bind('<<ComboboxSelected>>',self.session_changed)
+        self.progress_text=tk.StringVar(value='No training session yet.'); self.text(p,var=self.progress_text,wraplength=950).pack(fill='x',padx=22,pady=8)
+        self.progress=ttk.Progressbar(p,mode='determinate'); self.progress.pack(fill='x',padx=22,pady=8)
+        self.text(p,'HARDEST JAM CASES',10,CYAN,True).pack(fill='x',padx=22,pady=(16,6))
+        self.text(p,'Escapes do not affect ranking. Auto stars appear after fresh validation.',10,MUTED).pack(fill='x',padx=22,pady=(0,10))
+        frame=tk.Frame(p,bg=PANEL); frame.pack(fill='both',expand=True,padx=22,pady=(0,16))
+        self.hard_tree=self.tree(frame,{'case':'Formation','angle':'Entry','line':'Line','offset':'Offset','rate':'Jam rate','count':'Jams / tried'},[220,75,75,75,95,110],height=6)
+
+    def poll_external(self,force=False):
+        if not force and time.monotonic()-self.last_refresh<2: return
+        self.last_refresh=time.monotonic()
+        try:
+            # An empty viewer starts in memory and attaches when the trainer creates the file.
+            if not self.lib.db.execute('PRAGMA database_list').fetchone()[2] and self.db_path.exists():
+                new=Library(self.db_path,read_only=True)
+                try: new.sessions()  # The trainer may still be creating its schema.
+                except sqlite3.Error:
+                    new.close(); raise
+                self.lib.close(); self.lib=new; self.db_version=None
+            version=self.lib.db.execute('PRAGMA data_version').fetchone()[0]
+            if not force and version==self.db_version: return
+            self.db_version=version
+            sessions=self.lib.sessions()
+            if not self.active_session and sessions: self.active_session=sessions[0]['id']
+            self.update_session(); self.refresh_library()
+            if not self.selected:
+                rows=self.lib.candidates()
+                if rows: self.select_candidate(rows[0]['id'])
+            elif self.selected:
+                candidate=self.lib.candidate(self.selected)
+                self.title.set(('★ ' if candidate['starred'] or candidate['auto_star'] else '')+candidate['name'])
+                old_id=self.selected_run
+                self.run_rows=self.lib.runs(self.selected); self.run_names=[f'{r["label"]}  ·  {r["status"]}' for r in self.run_rows]
+                self.run_combo.configure(values=self.run_names)
+                index=next((i for i,r in enumerate(self.run_rows) if r['id']==old_id),0)
+                self.run_var.set(self.run_names[index] if self.run_names else ''); self.show_run()
+        except sqlite3.Error as e:
+            self.db_version=None; self.status.set('Waiting for training database: '+str(e))
+
+    def monitor_progress(self):
+        if not self.read_only or not self.active_session: return
+        state=self.lib.state(self.active_session); event=self.lib.progress(self.active_session)
+        self.progress_text.set(f'{state["status"]} · {state["state"]["phase"]} — '+event.get('message',''))
+        self.progress.configure(maximum=max(1,event.get('total',1)),value=event.get('done',0))
+        self.status.set('Read-only viewer · connected to '+str(self.db_path))
 
     def schedule_filter(self):
         if self.refresh_pending: self.root.after_cancel(self.refresh_pending)
@@ -193,7 +282,7 @@ class App(Viewer):
         self.visible_results=[]; self.selected_run=None
         if self.run_var.get() not in self.run_names:
             for v in self.card_vars.values(): v.set('—')
-            self.run_info.set('No test runs yet. Open the live view to test this geometry.'); return
+            self.run_info.set('No saved test runs yet. Training results appear automatically.'); return
         run=self.run_rows[self.run_names.index(self.run_var.get())]; self.selected_run=run['id']; results=self.lib.results(run['id']); s=metrics(results)
         self.card_vars['jamfree'].set(f'{s["pass_rate"]:.1%}' if results else '—'); self.card_vars['jams'].set(str(s['jams'])); self.card_vars['runs'].set(f'{len(results)} / {run["expected"]}'); self.card_vars['misses'].set(str(s['missed']))
         self.run_info.set(f'{run["label"]} · {run["status"]} · {s["fed"]}/{s["total"]} balls delivered (informational)')
@@ -245,6 +334,8 @@ class App(Viewer):
             finally: self.events.put({'finished':True,'error':error,'message':('Error: '+error) if error else ('Paused and saved.' if self.cancel.is_set() else 'Job finished. Open candidates to inspect test runs.')})
         self.job=threading.Thread(target=work,daemon=True); self.job.start()
     def poll(self):
+        if self.read_only:
+            self.poll_external(); return
         changed=False
         while not self.events.empty():
             d=self.events.get(); self.status.set(d.get('message','')); self.progress_text.set(d.get('message','')); changed=True
@@ -266,11 +357,11 @@ class App(Viewer):
         sessions=self.lib.sessions(); self.session_ids=[s['id'] for s in sessions]; self.session_names=[f'{s["id"][-10:]} · {s["status"]} · {json.loads(s["state"])["phase"]}' for s in sessions]
         self.session_combo.configure(values=self.session_names)
         if self.active_session in self.session_ids: self.session_var.set(self.session_names[self.session_ids.index(self.active_session)])
-        self.refresh_hardness()
+        self.refresh_hardness(); self.monitor_progress()
     def session_changed(self,e=None):
         if self.busy: self.update_session(); return
         if self.session_var.get() in self.session_names:
-            self.active_session=self.session_ids[self.session_names.index(self.session_var.get())]; self.refresh_hardness(); self.refresh_library()
+            self.active_session=self.session_ids[self.session_names.index(self.session_var.get())]; self.refresh_hardness(); self.refresh_library(); self.monitor_progress()
     def refresh_hardness(self):
         for iid in self.hard_tree.get_children(): self.hard_tree.delete(iid)
         if not self.active_session: return
@@ -298,7 +389,10 @@ class App(Viewer):
         else: self.lib.close(); self.root.destroy()
 
 if __name__=='__main__':
-    mp.freeze_support(); root=tk.Tk(); app=App(root)
+    mp.freeze_support()
+    parser=argparse.ArgumentParser(description='Read-only funnel training results viewer')
+    parser.add_argument('--db',type=Path,default=HERE/'data'/'funnel_lab.sqlite3'); parser.add_argument('--capture',action='store_true')
+    args=parser.parse_args(); root=tk.Tk(); app=App(root,args.db)
     if '--capture' in sys.argv:
         from PIL import ImageGrab
         root.update()

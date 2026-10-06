@@ -76,7 +76,7 @@ class StudioTests(unittest.TestCase):
         import tkinter as tk
         from app import App
         with tempfile.TemporaryDirectory() as folder:
-            root=tk.Tk(); app=App(root,Path(folder)/'gui.db'); root.update()
+            root=tk.Tk(); app=App(root,Path(folder)/'gui.db',read_only=False); root.update()
             app.select_candidate('original-cad'); self.assertEqual(len(app.visible_results),137)
             app.jams_only.set(True); app.show_run(); self.assertTrue(all(r['jam'] for r in app.visible_results))
             expected=app.visible_results[0]['case']; app.test_tree.selection_set('0'); root.update()

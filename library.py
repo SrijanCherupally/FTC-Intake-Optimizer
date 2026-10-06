@@ -23,9 +23,15 @@ def ranking(s):
     return (-s['pass_rate'],s['mean_stall'])
 
 class Library:
-    def __init__(self,path):
-        self.path=Path(path); self.path.parent.mkdir(parents=True,exist_ok=True)
-        self.db=sqlite3.connect(self.path,timeout=15)
+    def __init__(self,path,read_only=False):
+        self.path=Path(path).resolve(); self.read_only=read_only
+        if read_only and self.path.exists():
+            self.db=sqlite3.connect(self.path.as_uri()+'?mode=ro',uri=True,timeout=15)
+            self.db.row_factory=sqlite3.Row
+            self.db.execute('PRAGMA query_only=ON')
+            return
+        if not read_only: self.path.parent.mkdir(parents=True,exist_ok=True)
+        self.db=sqlite3.connect(':memory:' if read_only else self.path,timeout=15)
         self.db.row_factory=sqlite3.Row
         self.db.execute('PRAGMA foreign_keys=ON')
         self.db.executescript('''
@@ -40,6 +46,8 @@ class Library:
           PRIMARY KEY(run,case_key));
         CREATE TABLE IF NOT EXISTS sessions(
           id TEXT PRIMARY KEY, config TEXT, baseline TEXT, state TEXT, status TEXT, created REAL);
+        CREATE TABLE IF NOT EXISTS controls(session TEXT PRIMARY KEY, pause INTEGER DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS progress(session TEXT PRIMARY KEY, payload TEXT);
         CREATE TABLE IF NOT EXISTS training_votes(
           session TEXT, candidate TEXT, case_key TEXT, case_data TEXT, jam INTEGER, missed INTEGER,
           PRIMARY KEY(session,candidate,case_key));
@@ -48,6 +56,9 @@ class Library:
         CREATE INDEX IF NOT EXISTS runs_candidate ON runs(candidate);
         ''')
         self.db.commit()
+        if read_only:
+            self.db.execute('PRAGMA query_only=ON')
+            return
         if not self.db.execute('SELECT 1 FROM training_votes LIMIT 1').fetchone():
             with self.db:
                 self.db.execute('''INSERT OR IGNORE INTO training_votes
@@ -107,6 +118,17 @@ class Library:
     def save_state(self,sid,state,status='running'):
         with self.db: self.db.execute('UPDATE sessions SET state=?,status=? WHERE id=?',(encode(state),status,sid))
     def sessions(self): return [dict(r) for r in self.db.execute('SELECT * FROM sessions ORDER BY created DESC')]
+    def request_pause(self,sid,value=True):
+        with self.db: self.db.execute('INSERT OR REPLACE INTO controls VALUES(?,?)',(sid,int(value)))
+    def pause_requested(self,sid):
+        row=self.db.execute('SELECT pause FROM controls WHERE session=?',(sid,)).fetchone()
+        return bool(row and row[0])
+    def save_progress(self,sid,payload):
+        with self.db: self.db.execute('INSERT OR REPLACE INTO progress VALUES(?,?)',(sid,encode(payload)))
+    def progress(self,sid):
+        try: row=self.db.execute('SELECT payload FROM progress WHERE session=?',(sid,)).fetchone()
+        except sqlite3.OperationalError: return {}
+        return json.loads(row[0]) if row else {}
     def hardness(self,sid):
         # Each geometry votes once per case, even when a cache is reused across rounds.
         rows=self.db.execute('''SELECT case_key,case_data,COUNT(*) attempts,SUM(jam) failures,

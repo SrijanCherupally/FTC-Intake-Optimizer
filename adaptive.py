@@ -2,7 +2,7 @@
 import argparse
 import concurrent.futures as futures
 import multiprocessing as mp
-import os, random, threading, time
+import os, random, signal, threading, time
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from geometry import Geometry
@@ -62,6 +62,7 @@ _worker_stop=None
 def worker_init(stop):
     global _worker_stop
     _worker_stop=stop
+    signal.signal(signal.SIGINT,signal.SIG_IGN)
 
 def acquire_session_lock(path,sid):
     """OS-released lock prevents two windows resuming the same search at once."""
@@ -115,7 +116,9 @@ class SearchRunner:
         self.settings=self.lib.candidate(session['baseline'])['settings']; self.baseline=session['baseline']
         self.start=time.monotonic(); self.new_tests=0; self.cached_tests=0
     def save(self,status='running'): self.lib.save_state(self.sid,self.state,status)
-    def emit(self,**data): self.notify({'session':self.sid,'phase':self.state['phase'],**data})
+    def emit(self,**data):
+        payload={'session':self.sid,'phase':self.state['phase'],'updated':time.time(),**data}
+        self.lib.save_progress(self.sid,payload); self.notify(payload)
     def evaluate(self,ids,label,tests,pool,worker_stop):
         todo=[]; all_results={}; total=len(ids); completed=0
         serial=[asdict(c) for c in tests]
@@ -129,6 +132,7 @@ class SearchRunner:
                 all_results[cid]=metrics(reused); completed+=1
         pending={}; index=0; heartbeat=time.monotonic()
         while pending or index<len(todo):
+            if self.lib.pause_requested(self.sid): self.stop.set()
             if self.stop.is_set(): worker_stop.set()
             while not self.stop.is_set() and len(pending)<self.config.workers and index<len(todo):
                 cid,rid,missing=todo[index]; index+=1; candidate=self.lib.candidate(cid)
@@ -158,10 +162,11 @@ class SearchRunner:
         if s['phase']=='complete': self.lib.close(); return s
         try: lease=acquire_session_lock(self.lib.path,self.sid)
         except Exception: self.lib.close(); raise
-        training=cases(c.broad_tests,c.seed)
-        ctx=mp.get_context('spawn'); worker_stop=ctx.Event()
-        self.save(); self.emit(message='Starting workers; saved runs will be reused.')
         try:
+            self.lib.request_pause(self.sid,False)
+            training=cases(c.broad_tests,c.seed)
+            ctx=mp.get_context('spawn'); worker_stop=ctx.Event()
+            self.save(); self.emit(message='Starting workers; saved runs will be reused.')
             with futures.ProcessPoolExecutor(max_workers=c.workers,mp_context=ctx,initializer=worker_init,initargs=(worker_stop,)) as pool:
                 if s['phase']=='broad':
                     base=self.lib.candidate(self.baseline)['geometry']
@@ -223,7 +228,8 @@ class SearchRunner:
             self.save('error'); raise
         finally: self.lib.close(); lease.close()
     def pause(self):
-        self.save('paused'); self.emit(message='Paused and saved. Resume continues missing tests without repeating completed results.')
+        self.save('paused'); self.lib.request_pause(self.sid,False)
+        self.emit(message='Paused and saved. Resume continues missing tests without repeating completed results.')
         return self.state
 
 if __name__=='__main__':
