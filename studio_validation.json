@@ -1,0 +1,234 @@
+{
+  "note": "Reduced demonstration: full default 100/2000 geometry search has not been run. Physics settings unchanged.",
+  "configuration": {
+    "broad_geometries": 12,
+    "broad_tests": 90,
+    "focused_geometries": 36,
+    "hard_tests": 18,
+    "coverage_tests": 6,
+    "round_size": 12,
+    "finalists": 4,
+    "validation_tests": 120,
+    "workers": 4,
+    "seed": 20261006
+  },
+  "winner": "search-1791255558201170900-b0005",
+  "finalists": [
+    {
+      "name": "Broad 005",
+      "id": "search-1791255558201170900-b0005",
+      "summary": {
+        "cases": 120,
+        "delivery_rate": 0.008333333333333333,
+        "fed": 3,
+        "jams": 24,
+        "max_overlap_mm": 0.2221,
+        "mean_slow": 0.45972916666666663,
+        "mean_stall": 1.331775,
+        "mean_time": 3.689,
+        "missed": 292,
+        "pass_rate": 0.8,
+        "passed": 96,
+        "total": 360,
+        "unfinished": 24,
+        "worst_time": 8.001
+      },
+      "geometry": {
+        "left_bow": -6,
+        "left_drop": 48.04074,
+        "left_lip": 25,
+        "left_radius": 32.49689,
+        "left_straight": 87.27052,
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "right_bow": -2.08489,
+        "right_drop": 35.51413,
+        "right_lip": 4.65074,
+        "right_radius": 23.8464,
+        "right_straight": 4.89749
+      },
+      "settings": {
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "speed": 220.0,
+        "stall_time": 1.5
+      }
+    },
+    {
+      "name": "Refine 0019",
+      "id": "search-1791255558201170900-f000018",
+      "summary": {
+        "cases": 120,
+        "delivery_rate": 0.06944444444444445,
+        "fed": 25,
+        "jams": 26,
+        "max_overlap_mm": 0.2297,
+        "mean_slow": 0.4940133333333333,
+        "mean_stall": 1.4655916666666668,
+        "mean_time": 4.144941666666666,
+        "missed": 269,
+        "pass_rate": 0.7833333333333333,
+        "passed": 94,
+        "total": 360,
+        "unfinished": 26,
+        "worst_time": 8.001
+      },
+      "geometry": {
+        "left_bow": -5.10181,
+        "left_drop": 49.56648,
+        "left_lip": 25,
+        "left_radius": 33.86456,
+        "left_straight": 97.21617,
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "right_bow": -1.52924,
+        "right_drop": 36.44166,
+        "right_lip": 4.90045,
+        "right_radius": 25.86321,
+        "right_straight": 0
+      },
+      "settings": {
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "speed": 220.0,
+        "stall_time": 1.5
+      }
+    },
+    {
+      "name": "Refine 0031",
+      "id": "search-1791255558201170900-f000030",
+      "summary": {
+        "cases": 120,
+        "delivery_rate": 0.6861111111111111,
+        "fed": 247,
+        "jams": 29,
+        "max_overlap_mm": 0.2286,
+        "mean_slow": 0.4718,
+        "mean_stall": 1.5524,
+        "mean_time": 4.039675,
+        "missed": 38,
+        "pass_rate": 0.7583333333333333,
+        "passed": 91,
+        "total": 360,
+        "unfinished": 28,
+        "worst_time": 8.001
+      },
+      "geometry": {
+        "left_bow": 5.52209,
+        "left_drop": 71.81698,
+        "left_lip": 3.96993,
+        "left_radius": 33.33313,
+        "left_straight": 77.19478,
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "right_bow": -0.08529,
+        "right_drop": 30.08358,
+        "right_lip": 11.44937,
+        "right_radius": 25.36495,
+        "right_straight": 20.67738
+      },
+      "settings": {
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "speed": 220.0,
+        "stall_time": 1.5
+      }
+    },
+    {
+      "name": "Refine 0002",
+      "id": "search-1791255558201170900-f000001",
+      "summary": {
+        "cases": 120,
+        "delivery_rate": 0.6166666666666667,
+        "fed": 222,
+        "jams": 40,
+        "max_overlap_mm": 0.2261,
+        "mean_slow": 0.5159316666666667,
+        "mean_stall": 2.184766666666667,
+        "mean_time": 4.547358333333333,
+        "missed": 34,
+        "pass_rate": 0.6666666666666666,
+        "passed": 80,
+        "total": 360,
+        "unfinished": 40,
+        "worst_time": 8.001
+      },
+      "geometry": {
+        "left_bow": 4.38416,
+        "left_drop": 71.16498,
+        "left_lip": 0,
+        "left_radius": 37.16066,
+        "left_straight": 64.52455,
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "right_bow": 1.02145,
+        "right_drop": 25,
+        "right_lip": 9.47963,
+        "right_radius": 25.71718,
+        "right_straight": 18.78514
+      },
+      "settings": {
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "speed": 220.0,
+        "stall_time": 1.5
+      }
+    },
+    {
+      "name": "Baseline \u00b7 170900",
+      "id": "search-1791255558201170900-b0000",
+      "summary": {
+        "cases": 120,
+        "delivery_rate": 0.5888888888888889,
+        "fed": 212,
+        "jams": 44,
+        "max_overlap_mm": 0.2412,
+        "mean_slow": 0.5478733333333333,
+        "mean_stall": 2.398483333333333,
+        "mean_time": 4.507508333333333,
+        "missed": 33,
+        "pass_rate": 0.6333333333333333,
+        "passed": 76,
+        "total": 360,
+        "unfinished": 44,
+        "worst_time": 8.001
+      },
+      "geometry": {
+        "left_bow": 0.0,
+        "left_drop": 40.0,
+        "left_lip": 10.0,
+        "left_radius": 30.0,
+        "left_straight": 73.218984,
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "right_bow": 0.0,
+        "right_drop": 40.0,
+        "right_lip": 4.0,
+        "right_radius": 30.0,
+        "right_straight": 24.0
+      },
+      "settings": {
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "speed": 220.0,
+        "stall_time": 1.5
+      }
+    }
+  ],
+  "simulations": 2888
+}

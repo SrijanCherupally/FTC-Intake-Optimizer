@@ -1,20 +1,44 @@
-# Funnel Lab
+# Funnel Lab · Candidate Studio
 
-Double-click **Launch Funnel Lab.vbs** on this computer. The included Pymunk engine is already installed locally in `vendor`; the launcher uses the bundled Python 3.12 runtime. Keep this folder together. No internet is needed to run it.
+A live Python physics simulator and jam-focused geometry optimizer for the FTC intake.
 
-On another computer, use Python with Tkinter, install `requirements.txt`, and run `python app.py`. The bundled vendor wheels are Windows x64 / Python 3.12; use the installed package instead of `vendor` for a different Python version/platform.
+Double-click **Launch Funnel Lab.vbs** on this computer. The existing launcher opens Candidate Studio using the bundled Python runtime. No internet is needed. On another Windows x64 computer with Python 3.12, run `python app.py`; on another platform/version install `requirements.txt` and omit the Windows-specific `vendor` folder.
 
-## Using the simulator
+![Candidate Studio](preview.png)
 
-1. Start with Four abreast. Choose two or three balls from the scenario list as needed.
-2. **Approach angle** changes the incoming velocity. **Ball line angle** rotates the line of balls independently. Offset moves the formation sideways; stagger shifts neighboring balls forward/backward. Positive approach angles move to the right.
-3. Change lips, straight lengths, radii, wedge drops or wedge curves, then **Apply inputs & restart**. To specify wall angles directly, edit the angle fields and press **Use angles**. Angles and straight lengths cannot be independent with fixed endpoints and radii.
-4. Pause, single-step, or slow playback. Numbered balls show exit order; arrows show actual velocity. A jam is at least 1.5 seconds without meaningful forward progress while balls remain at the intake.
-5. **Run 137 test cases** tests 2/3/4 balls × five approach angles × three line orientations × three offsets, plus two sanity cases. Select any result to replay its exact settings. Missed balls, unfinished cases and detected jams are separate outcomes.
-6. **Search 24 geometries** runs a reproducible bounded random search on 16 mixed training scenarios, then checks the baseline and selected candidate against 110 separate scenarios. The candidate may be better or worse on those holdout cases. Inspect that comparison before adopting it. This is not an exhaustive optimization.
-7. Save/load setup JSON, export results as JSON and CSV, or export an SVG with one drawing unit per mm. The search never changes the ball diameter, friction, drive settings, or fixed anchors. Stop interrupts work between short simulation chunks.
+## Candidates own their tests
 
-The supplied `validation_report.json` contains baseline results and numerical checks. `verified_search.json` contains the pre-run search and its holdout comparison. `search_candidate.json` can be opened using Load setup. Saved results load when the app starts.
+The left sidebar is the geometry library. Click a candidate to open its test groups. The dropdown selects Broad survey, a Focus round, Finalist screening, Fresh validation, or a manual/imported run. Each group reports its actual completed/expected test count. Partial runs never look like completed validation.
+
+Click a test to open its exact geometry, physics settings and incoming formation in **Live simulation**. Filter **Jams only** to inspect failure cases. Manual stars mark favorites; automatic stars mark the top three candidates after a search completes fresh validation. **Starred candidates only** filters the library. Scores from different test groups should not be compared directly.
+
+The Live simulation tab retains the geometry editor, wall-angle controls, playback speed, single stepping, setup JSON and geometry SVG export. **Save as candidate** preserves a geometry without running tests. **Test this geometry** saves a separate candidate with its 137-case suite. Changes in the editor do not alter historical candidates or their replays.
+
+## Adaptive optimizer
+
+The default pipeline is:
+
+1. **Broad survey:** 100 geometries, each tested on the same 240 environments. These balance 2, 3 and 4 balls, with varied approach angle, independent ball-line orientation, offset, ball spacing and stagger.
+2. **Learn the jams:** count how often each test causes a jam across different geometries. A repeated cached result does not cast another vote. Escaped balls are not failures.
+3. **Focused refinement:** try 2,000 new geometries. Each uses 48 difficult tests plus 12 rotating coverage tests. After every 100 new geometries, recompute which cases are hardest. Mutate strong candidates locally, shrink the mutation range over time, and keep occasional broad random exploration.
+4. **Fair comparisons:** reevaluate incumbents on the exact same cohort as challengers in each round. At the end, compare the accumulated round champions on the full 240-case training suite.
+5. **Fresh validation:** the top six screening candidates, plus the original search baseline if needed, each get the same 300 fresh environments. None of these holdout results feeds the geometry mutations. Rank them and star the top three. The baseline is eligible to win.
+
+**The objective is jam rate, then mean stall duration. Missed balls, delivered fraction and elapsed travel time do not affect ranking.** A no-jam test can include balls escaping outside the wedge. Delivery and misses remain visible for interpretation. Automatic stars mean best among the evaluated candidates, not proof of a jam-free real robot or a global optimum.
+
+All counts and CPU workers are adjustable. The 100 + 2,000 default is a substantial CPU job; duration depends on the processor and how long each scenario stalls. Search runs in separate worker processes, leaving the UI available. The fixed 960 Hz physics step and 50 solver iterations are not reduced for throughput.
+
+**Pause & save** stores completed tests, including partial candidate runs. **Resume saved search** continues the selected session with its original configuration and skips exact tests already cached for that geometry/settings pair. Closing the window while a search runs pauses it cleanly before exit. The configuration fields define a NEW search; a resumed search uses its saved configuration.
+
+A small coverage sample remains during refinement because a geometry change can break an environment that worked for a previous candidate. The full easy suite is not rerun for every refinement candidate. A run is budgeted by the configured number of candidates; it does not keep consuming CPU indefinitely waiting for a perfect score.
+
+## Saved files
+
+- `data/funnel_lab.sqlite3`: persistent candidates, geometry/settings, per-test results, favorites, hard-case statistics, and search checkpoints. This stays in your OneDrive project folder and is ignored by Git.
+- Existing `validation_report.json`, `verified_search.json`, and `latest_search.json` are preserved. Their baseline and selected-candidate detailed runs import automatically.
+- `studio_validation.json`: results of a reduced demonstration of the new pipeline. It explicitly records its smaller budget; it is not a completed 100/2,000 search.
+- `adaptive_candidate.json`: the demonstration's jam-ranked winner, loadable using **Load setup JSON**. Full candidate test groups and stars are retained in the local library.
+- Export a selected candidate/run to JSON and CSV from the candidate page.
 
 ## Geometry and constraints
 
@@ -43,8 +67,10 @@ This is a **planar transfer screening model**, not a validated digital twin. It 
 
 To improve real-world agreement, record a straight four-ball pickup and an angled pickup with your actual roller speed. Measure single-ball travel speed and compare observed stalls/exit timing. Calibrate the fixed friction and drive settings once, then rerun the geometry tests. A rigid planar simulation cannot prove that a physical mechanism never jams.
 
-## Verification
+## Verification and command-line use
 
-`python validate.py --search` repeats geometry constraints, nonoverlapping initial formations, centered/single-file passage, outside-miss classification, a known symmetric arch jam, deterministic replay, half-time-step convergence on five representative cases, all 137 baseline cases and the 24-candidate search. `python app.py --smoke` checks native controls, drawing, stepping and diagonal setup.
+`python test_studio.py` checks jam-only scoring, independent scenario generation, candidate/run persistence, hard-case selection, cached-vote deduplication, pause/resume through the real multiprocessing physics pipeline, independent holdout sets, automatic stars, and native candidate selection/replay.
+
+`python -c "import validate; validate.checks()"` runs the original numerical/geometry sanity checks, including a known jam and half-step comparisons. `python adaptive.py --quick` runs a small complete search. `python adaptive.py` runs the full default budget. `python adaptive.py --resume SESSION_ID` resumes a saved search in the default database. The older `search.py` and `validate.py --search` remain available to reproduce the historical 24-candidate report; Candidate Studio uses `adaptive.py`.
 
 Engine reference: https://www.pymunk.org/en/7.2.0/pymunk.html

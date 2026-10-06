@@ -1,5 +1,7 @@
 # Initial simulation results
 
+Historical report from the original delivery-based search. Candidate Studio now prioritizes **jam rate, then stall duration**, and ignores misses in its ranking. The conclusion below about overall delivery is retained as historical context, not the new selection rule. See `studio_validation.json` for the newer jam-focused demonstration.
+
 These are results of the uncalibrated planar model, not measured robot performance. Ball diameter, friction and drive settings were fixed throughout.
 
 The baseline matches the provided dimensions. Unspecified left radius and wedge drops were inferred as described in README.md.

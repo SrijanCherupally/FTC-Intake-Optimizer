@@ -1,353 +1,309 @@
-"""Run with Python 3.12 on this machine, or install requirements on another machine."""
-import sys, json, time, math, threading, queue, csv
+"""Funnel Lab candidate studio with a persistent adaptive search library."""
+import csv, json, multiprocessing as mp, queue, sys, threading, time
 from pathlib import Path
 from dataclasses import asdict
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
-from geometry import Geometry, BALL_D, THROAT, MOUNT_SPAN
-from physics import Simulation, Settings, Case, PATTERNS, suite, summarize
-from search import evaluate, optimize
+from tkinter import ttk, filedialog, messagebox
+from geometry import Geometry
+from physics import Settings, Case, PATTERNS, Simulation, suite
+from viewer import Viewer
+from library import Library, metrics
+from adaptive import SearchConfig, SearchRunner, create_session
+from search import evaluate
 
 HERE=Path(__file__).resolve().parent
-BG='#0c1423'; PANEL='#142136'; TEXT='#edf3fc'; MUTED='#9bacc5'; CYAN='#5de0d6'; GOLD='#f5bd66'
-COLORS=['#5de0d6','#88a8ff','#f5bd66','#f68ba9','#ba9bff','#8cdd97','#f28c64','#83c9e8']
+BG='#0b1020'; PANEL='#131d31'; CARD='#19253c'; TEXT='#e8effc'; MUTED='#90a2bf'; CYAN='#67ddd0'; GOLD='#f6c879'; RED='#fb9eaa'
 
-class App:
-    def __init__(self, root):
-        self.root=root; root.title('Funnel Lab • FTC ball transfer')
-        root.geometry(f'{min(1430,root.winfo_screenwidth()-80)}x{min(940,root.winfo_screenheight()-100)}+25+25'); root.minsize(1100,740)
-        root.configure(bg=BG)
-        style=ttk.Style(root); style.theme_use('clam')
-        style.configure('.',background=PANEL,foreground=TEXT,font=('Segoe UI',10))
-        style.configure('TButton',padding=(10,7),background='#263b59',foreground=TEXT,borderwidth=0)
-        style.map('TButton',background=[('active','#345776'),('disabled','#1c2b40')])
-        style.configure('TEntry',fieldbackground='#21334d',foreground=TEXT,insertcolor=TEXT)
-        style.configure('TCombobox',fieldbackground='#21334d',foreground=TEXT,arrowcolor=TEXT)
-        style.map('TCombobox',fieldbackground=[('readonly','#21334d')],foreground=[('readonly',TEXT)])
-        style.configure('Treeview',background=PANEL,fieldbackground=PANEL,foreground=TEXT,rowheight=26)
-        style.configure('Treeview.Heading',background='#23344e',foreground=TEXT)
-        style.map('Treeview',background=[('selected','#316272')])
-        self.geo=Geometry(); self.settings=Settings(); self.case=Case()
-        self.vars={}; self.running=True; self.speed_factor=tk.DoubleVar(value=1)
-        self.show_trails=tk.BooleanVar(value=True); self.events=queue.Queue(); self.cancel=threading.Event()
-        self.busy=False; self.batch_results=[]; self.best=None; self.search_report=None; self.sim=None
-        self._build(); self.reset(); self.last_clock=time.perf_counter(); self.accumulator=0
-        prior=HERE/'validation_report.json'
-        if prior.exists():
-            data=json.loads(prior.read_text(encoding='utf-8')); self.batch_results=data['baseline_results']
-            self.results_geo=Geometry(**data['geometry']); self.results_settings=Settings(**data['settings']); self.populate(self.batch_results)
-            self.status.set(f'Loaded {len(self.batch_results)} baseline test results. Click a row to replay its exact scenario.')
-        prior_search=HERE/'verified_search.json'
-        if prior_search.exists():
-            self.search_report=json.loads(prior_search.read_text(encoding='utf-8'))
-            self.best=Geometry(**self.search_report['best_geometry']); self.apply_best.configure(state='normal')
-        root.protocol('WM_DELETE_WINDOW',self.close)
-        self.tick()
+class App(Viewer):
+    def __init__(self,root,db_path=None):
+        self.root=root; root.title('Funnel Lab · Candidate Studio')
+        root.geometry(f'{min(1520,root.winfo_screenwidth()-60)}x{min(970,root.winfo_screenheight()-90)}+20+20'); root.minsize(1100,740); root.configure(bg=BG)
+        self.db_path=Path(db_path or HERE/'data'/'funnel_lab.sqlite3'); self.lib=Library(self.db_path); self.lib.import_legacy(HERE)
+        if not self.lib.candidates(): self.lib.add('Original CAD',Geometry().dict(),asdict(Settings()),cid='original-cad')
+        self.geo=Geometry(); self.settings=Settings(); self.case=Case(); self.vars={}; self.sim=None
+        self.running=False; self.busy=False; self.events=queue.Queue(); self.cancel=threading.Event(); self.job=None
+        self.speed_factor=tk.DoubleVar(value=1); self.show_trails=tk.BooleanVar(value=True)
+        self.selected=None; self.selected_run=None; self.visible_results=[]; self.active_session=None
+        self.last_refresh=0.; self.library_dirty=False; self.refresh_pending=None
+        self.styles(); self.build(); self.refresh_library(); self.select_candidate('original-cad')
+        sessions=self.lib.sessions()
+        if sessions: self.active_session=sessions[0]['id']; self.update_session()
+        self.last_clock=time.perf_counter(); self.accumulator=0.; root.protocol('WM_DELETE_WINDOW',self.close); self.tick()
 
-    def label(self,parent,text,size=10,color=TEXT,bold=False):
-        return tk.Label(parent,text=text,bg=PANEL,fg=color,font=('Segoe UI',size,'bold' if bold else 'normal'),anchor='w')
+    def styles(self):
+        s=ttk.Style(); s.theme_use('clam')
+        s.configure('.',background=PANEL,foreground=TEXT,font=('Segoe UI',10),borderwidth=0)
+        s.configure('TButton',padding=(12,8),background='#263653',foreground=TEXT)
+        s.map('TButton',background=[('active','#355478'),('disabled','#172136')],foreground=[('disabled','#66778f')])
+        s.configure('Accent.TButton',background='#287f80',foreground='#ffffff',font=('Segoe UI',10,'bold'))
+        s.configure('TEntry',fieldbackground='#1d2c47',foreground=TEXT,insertcolor=TEXT,padding=5)
+        s.configure('TCombobox',fieldbackground='#1d2c47',foreground=TEXT,arrowcolor=TEXT,padding=5)
+        s.map('TCombobox',fieldbackground=[('readonly','#1d2c47')],foreground=[('readonly',TEXT)])
+        s.configure('Treeview',background=PANEL,fieldbackground=PANEL,foreground=TEXT,rowheight=33,borderwidth=0)
+        s.configure('Treeview',bordercolor=PANEL,lightcolor=PANEL,darkcolor=PANEL)
+        s.configure('Treeview.Heading',background=CARD,foreground=MUTED,font=('Segoe UI',9,'bold'),padding=8)
+        s.map('Treeview',background=[('selected','#254962')],foreground=[('selected','#ffffff')])
+        s.configure('TNotebook',background=BG,tabmargins=(0,0,0,10)); s.configure('TNotebook.Tab',background=PANEL,foreground=MUTED,padding=(20,11))
+        s.map('TNotebook.Tab',background=[('selected',CARD)],foreground=[('selected',CYAN)])
+        s.configure('TProgressbar',background=CYAN,troughcolor=CARD); s.configure('TCheckbutton',background=PANEL,foreground=MUTED)
 
-    def _build(self):
-        head=tk.Frame(self.root,bg=BG); head.pack(fill='x',padx=22,pady=(15,12))
-        tk.Label(head,text='FUNNEL LAB',font=('Segoe UI',21,'bold'),bg=BG,fg=TEXT).pack(side='left')
-        tk.Label(head,text='  /  FTC transfer geometry',font=('Segoe UI',12),bg=BG,fg=MUTED).pack(side='left')
-        tk.Label(head,text='74 mm balls   •   75 mm outlet   •   168 mm mounts',bg=BG,fg=CYAN,font=('Segoe UI',11,'bold')).pack(side='right')
-        main=tk.Frame(self.root,bg=BG); main.pack(fill='both',expand=True,padx=18,pady=(0,12))
-        left=tk.Frame(main,bg=PANEL,width=335); left.pack(side='left',fill='y',padx=(0,12)); left.pack_propagate(False)
-        sc=tk.Canvas(left,bg=PANEL,highlightthickness=0,width=315)
-        sb=ttk.Scrollbar(left,orient='vertical',command=sc.yview); sb.pack(side='right',fill='y'); sc.pack(fill='both',expand=True)
-        sc.configure(yscrollcommand=sb.set)
-        controls=tk.Frame(sc,bg=PANEL); sc.create_window((0,0),window=controls,anchor='nw',width=310)
-        controls.bind('<Configure>',lambda e:sc.configure(scrollregion=sc.bbox('all')))
-        def wheel(e): sc.yview_scroll(int(-e.delta/120),'units')
-        sc.bind('<Enter>',lambda e:sc.bind_all('<MouseWheel>',wheel))
-        sc.bind('<Leave>',lambda e:sc.unbind_all('<MouseWheel>'))
-        def section(text): self.label(controls,text,11,CYAN,True).pack(fill='x',padx=14,pady=(16,6))
-        section('ENTRY SCENARIO')
-        self.pattern=tk.StringVar(value=self.case.name)
-        ttk.Combobox(controls,textvariable=self.pattern,values=PATTERNS,state='readonly').pack(fill='x',padx=14,pady=3)
-        self.field(controls,'angle','Approach angle (deg)',0)
-        self.field(controls,'orientation','Ball line angle (deg)',0)
-        self.field(controls,'offset','Lateral offset (mm)',0)
-        self.field(controls,'spacing','Ball center spacing (mm)',80)
-        self.field(controls,'stagger','Row stagger (mm)',0)
-        self.field(controls,'seed','Scatter seed',1)
+    def text(self,parent,text='',size=10,color=TEXT,bold=False,var=None,**kw):
+        return tk.Label(parent,text=text,textvariable=var,bg=parent.cget('bg'),fg=color,font=('Segoe UI',size,'bold' if bold else 'normal'),anchor='w',**kw)
+    def button(self,parent,label,command,accent=False):
+        return ttk.Button(parent,text=label,command=command,style='Accent.TButton' if accent else 'TButton')
+    def tree(self,parent,columns,widths,height=10):
+        frame=tk.Frame(parent,bg=PANEL); frame.pack(fill='both',expand=True)
+        t=ttk.Treeview(frame,columns=list(columns),show='headings',height=height,selectmode='browse')
+        for i,(col,title) in enumerate(columns.items()):
+            t.heading(col,text=title); t.column(col,width=widths[i],minwidth=45,stretch=i==0)
+        sb=ttk.Scrollbar(frame,orient='vertical',command=t.yview); t.configure(yscrollcommand=sb.set); sb.pack(side='right',fill='y'); t.pack(fill='both',expand=True)
+        return t
+
+    def build(self):
+        head=tk.Frame(self.root,bg=BG); head.pack(fill='x',padx=24,pady=(18,14))
+        self.text(head,'FUNNEL LAB',22,bold=True).pack(side='left'); self.text(head,'  /  candidate studio',12,MUTED).pack(side='left')
+        self.text(head,'74 mm balls   /   75 mm outlet   /   168 mm mounts',10,CYAN,True).pack(side='right')
+        body=tk.Frame(self.root,bg=BG); body.pack(fill='both',expand=True,padx=18,pady=(0,14))
+        side=tk.Frame(body,bg=PANEL,width=300); side.pack(side='left',fill='y',padx=(0,14)); side.pack_propagate(False)
+        self.text(side,'GEOMETRY CANDIDATES',10,CYAN,True).pack(fill='x',padx=14,pady=(16,5))
+        self.count_text=tk.StringVar(); self.text(side,var=self.count_text,size=9,color=MUTED).pack(fill='x',padx=14)
+        self.scope=tk.StringVar(value='All candidates')
+        scope_combo=ttk.Combobox(side,textvariable=self.scope,values=['All candidates','Current search'],state='readonly')
+        scope_combo.pack(fill='x',padx=12,pady=(10,0)); scope_combo.bind('<<ComboboxSelected>>',lambda e:self.refresh_library())
+        self.filter_text=tk.StringVar(); ttk.Entry(side,textvariable=self.filter_text).pack(fill='x',padx=12,pady=10)
+        self.filter_text.trace_add('write',lambda *a:self.schedule_filter()); self.only_stars=tk.BooleanVar(value=False)
+        ttk.Checkbutton(side,text='Starred candidates only',variable=self.only_stars,command=self.refresh_library).pack(anchor='w',padx=14,pady=(0,10))
+        self.candidate_tree=self.tree(side,{'candidate':'Candidate','stage':'Stage'},[195,70]); self.candidate_tree.bind('<<TreeviewSelect>>',self.candidate_clicked)
+        self.thumb=tk.Canvas(side,bg=PANEL,height=125,highlightthickness=0); self.thumb.pack(fill='x',padx=14,pady=(8,0))
+        self.button(side,'★  Toggle favorite',self.toggle_star).pack(fill='x',padx=12,pady=10)
+        self.text(side,'Auto stars: top fresh-validation results.\nMisses do not affect ranking.',9,MUTED,justify='left').pack(fill='x',padx=14,pady=(0,14))
+        right=tk.Frame(body,bg=BG); right.pack(side='left',fill='both',expand=True)
+        self.tabs=ttk.Notebook(right); self.tabs.pack(fill='both',expand=True)
+        self.overview=tk.Frame(self.tabs,bg=PANEL); self.live=tk.Frame(self.tabs,bg=PANEL); self.optimizer=tk.Frame(self.tabs,bg=PANEL)
+        for frame,title in [(self.overview,'Candidate & tests'),(self.live,'Live simulation'),(self.optimizer,'Adaptive optimizer')]: self.tabs.add(frame,text=title)
+        self.build_overview(); self.build_live(); self.build_optimizer()
+        self.status=tk.StringVar(value='Select a geometry to inspect its test runs.'); self.text(right,var=self.status,size=9,color=MUTED,wraplength=1000).pack(fill='x',pady=(10,0))
+
+    def build_overview(self):
+        top=tk.Frame(self.overview,bg=PANEL); top.pack(fill='x',padx=20,pady=(18,12))
+        self.title=tk.StringVar(value='Select a candidate'); self.text(top,var=self.title,size=20,bold=True).pack(side='left')
+        self.button(top,'Open live view',lambda:self.tabs.select(self.live)).pack(side='right')
+        self.candidate_meta=tk.StringVar(); self.text(self.overview,var=self.candidate_meta,size=10,color=MUTED).pack(fill='x',padx=20,pady=(0,12))
+        cards=tk.Frame(self.overview,bg=PANEL); cards.pack(fill='x',padx=20,pady=(0,14)); self.card_vars={}
+        for i,(key,label,color) in enumerate([('jamfree','JAM-FREE TESTS',CYAN),('jams','JAMS',RED),('runs','TESTS FINISHED',TEXT),('misses','MISSED · NOT SCORED',MUTED)]):
+            card=tk.Frame(cards,bg=CARD); card.grid(row=0,column=i,sticky='ew',padx=(0,8)); cards.columnconfigure(i,weight=1)
+            self.text(card,label,9,MUTED).pack(fill='x',padx=14,pady=(12,3)); v=tk.StringVar(value='—'); self.card_vars[key]=v
+            self.text(card,var=v,size=23,color=color,bold=True).pack(fill='x',padx=14,pady=(0,12))
+        bar=tk.Frame(self.overview,bg=PANEL); bar.pack(fill='x',padx=20,pady=6)
+        self.run_var=tk.StringVar(); self.run_combo=ttk.Combobox(bar,textvariable=self.run_var,state='readonly',width=35); self.run_combo.pack(side='left'); self.run_combo.bind('<<ComboboxSelected>>',lambda e:self.show_run())
+        self.jams_only=tk.BooleanVar(value=False); ttk.Checkbutton(bar,text='Jams only',variable=self.jams_only,command=self.show_run).pack(side='left',padx=12)
+        self.button(bar,'Export selected run',self.export_results).pack(side='right')
+        self.run_info=tk.StringVar(); self.text(self.overview,var=self.run_info,size=9,color=MUTED,wraplength=1000).pack(fill='x',padx=20,pady=(6,10))
+        frame=tk.Frame(self.overview,bg=PANEL); frame.pack(fill='both',expand=True,padx=20,pady=(0,10))
+        self.test_tree=self.tree(frame,{'case':'Formation / test','angle':'Entry','line':'Line','offset':'Offset','result':'Result','fed':'Fed','stall':'Stall / s'},[265,65,65,65,95,55,75])
+        self.test_tree.tag_configure('jam',foreground=RED); self.test_tree.tag_configure('clear',foreground=CYAN); self.test_tree.bind('<<TreeviewSelect>>',self.replay_selected)
+        self.text(self.overview,'Click a test to replay this candidate’s exact geometry and physics.',10,MUTED).pack(fill='x',padx=20,pady=(0,14))
+
+    def build_live(self):
+        pane=tk.PanedWindow(self.live,orient='horizontal',bg=PANEL,sashwidth=8); pane.pack(fill='both',expand=True,padx=10,pady=10)
+        left=tk.Frame(pane,bg=PANEL); pane.add(left,width=295,minsize=285)
+        sc=tk.Canvas(left,bg=PANEL,highlightthickness=0); sb=ttk.Scrollbar(left,command=sc.yview); sb.pack(side='right',fill='y'); sc.pack(fill='both',expand=True); sc.configure(yscrollcommand=sb.set)
+        form=tk.Frame(sc,bg=PANEL); sc.create_window((0,0),window=form,anchor='nw',width=275); form.bind('<Configure>',lambda e:sc.configure(scrollregion=sc.bbox('all')))
+        def section(title): self.text(form,title,10,CYAN,True).pack(fill='x',padx=14,pady=(14,8))
+        section('ENTRY SCENARIO'); self.pattern=tk.StringVar(value=self.case.name)
+        ttk.Combobox(form,textvariable=self.pattern,values=PATTERNS,state='readonly',width=23).pack(fill='x',padx=14,pady=5)
+        for k,label,v in [('angle','Approach °',0),('orientation','Line orientation °',0),('offset','Lateral offset mm',0),('spacing','Center spacing mm',80),('stagger','Row stagger mm',0),('seed','Scatter seed',1)]: self.field(form,k,label,v)
         section('FUNNEL GEOMETRY · mm')
-        for key,label in [('left_lip','Left lip'),('right_lip','Right lip'),('left_straight','Left outlet straight'),('right_straight','Right outlet straight'),('left_radius','Left curve radius'),('right_radius','Right curve radius'),('left_drop','Left wedge drop'),('right_drop','Right wedge drop'),('left_bow','Left wedge curve'),('right_bow','Right wedge curve')]:
-            self.field(controls,key,label,getattr(self.geo,key))
-        self.angle_text=tk.StringVar()
-        self.label(controls,'Angles measured from horizontal',9,MUTED).pack(fill='x',padx=14,pady=(8,2))
-        self.field(controls,'left_angle','Left wall angle (deg)',30)
-        self.field(controls,'right_angle','Right wall angle (deg)',59.4)
-        ttk.Button(controls,text='Use angles → update straight lengths',command=self.use_angles).pack(fill='x',padx=14,pady=5)
-        section('FIXED PHYSICS · provisional values')
-        for key,label in [('speed','Roller target speed (mm/s)'),('friction','Contact friction coefficient'),('response','Drive response (s)'),('acceleration','Traction limit (mm/s²)')]: self.field(controls,key,label,getattr(self.settings,key))
-        self.label(controls,'Friction and ball size stay fixed during search.',9,MUTED).pack(fill='x',padx=14,pady=5)
-        section('CONFIRMED MOUNTING DIMENSIONS · mm')
-        self.field(controls,'mount_y','Top → mounting line',self.geo.mount_y)
-        self.field(controls,'outer_span','Outer wedge anchors span',self.geo.outer_span)
-        self.label(controls,'Fixed in search: 107.38628 / 280.35.',9,GOLD).pack(fill='x',padx=14,pady=5)
-        ttk.Button(controls,text='Apply inputs & restart',command=self.apply).pack(fill='x',padx=14,pady=(12,5))
-        ttk.Button(controls,text='Restore screenshot geometry',command=self.restore).pack(fill='x',padx=14,pady=5)
-        ttk.Button(controls,text='Save setup…',command=self.save_setup).pack(fill='x',padx=14,pady=5)
-        ttk.Button(controls,text='Load setup…',command=self.load_setup).pack(fill='x',padx=14,pady=5)
-        ttk.Button(controls,text='Export geometry SVG…',command=self.export_svg).pack(fill='x',padx=14,pady=(5,18))
-        right=tk.Frame(main,bg=BG); right.pack(side='left',fill='both',expand=True)
-        toolbar=tk.Frame(right,bg=PANEL); toolbar.pack(fill='x')
-        self.play=ttk.Button(toolbar,text='Pause',command=self.toggle); self.play.pack(side='left',padx=8,pady=8)
-        ttk.Button(toolbar,text='Restart',command=self.reset).pack(side='left',padx=4)
-        ttk.Button(toolbar,text='Step 0.1 s',command=self.step_once).pack(side='left',padx=4)
-        self.label(toolbar,'Playback').pack(side='left',padx=(16,3))
-        ttk.Combobox(toolbar,textvariable=self.speed_factor,values=[.25,.5,1,2,4],width=5,state='readonly').pack(side='left')
-        ttk.Checkbutton(toolbar,text='Trails',variable=self.show_trails).pack(side='left',padx=12)
-        self.stats=tk.StringVar(); tk.Label(right,textvariable=self.stats,bg=BG,fg=TEXT,font=('Segoe UI',11),anchor='w').pack(fill='x',pady=8)
-        self.canvas=tk.Canvas(right,bg='#101c2e',highlightthickness=0); self.canvas.pack(fill='both',expand=True)
-        self.canvas.bind('<Configure>',lambda e:self.draw())
-        tk.Label(right,text='Uncalibrated 2D physics • upward roller drive • no gravity in this view • fixed friction',bg=BG,fg=MUTED,font=('Segoe UI',9),anchor='w').pack(fill='x',pady=5)
-        actions=tk.Frame(right,bg=PANEL); actions.pack(fill='x',pady=(4,6))
-        ttk.Button(actions,text=f'Run {len(suite())} test cases',command=self.batch).pack(side='left',padx=6,pady=8)
-        ttk.Button(actions,text='Search 24 geometries',command=self.search).pack(side='left',padx=4)
-        ttk.Button(actions,text='Stop',command=self.cancel.set).pack(side='left',padx=4)
-        self.apply_best=ttk.Button(actions,text='Apply search candidate',command=self.use_best,state='disabled'); self.apply_best.pack(side='left',padx=4)
-        ttk.Button(actions,text='Export results',command=self.export_results).pack(side='right',padx=6)
-        self.status=tk.StringVar(value='Ready. Change inputs, then Apply. Select a test result to replay it.')
-        tk.Label(right,textvariable=self.status,bg=BG,fg=GOLD,font=('Segoe UI',10),anchor='w',wraplength=1000).pack(fill='x',pady=(2,6))
-        cols=('case','angle','fed','jam','time','missed')
-        self.table=ttk.Treeview(right,columns=cols,show='headings',height=5)
-        for c,title,width in zip(cols,['Scenario · click to replay','Angle','Delivered','Jam','Last exit / s','Missed'],[290,65,80,65,95,65]):
-            self.table.heading(c,text=title); self.table.column(c,width=width,stretch=c=='case')
-        self.table.pack(fill='x'); self.table.bind('<<TreeviewSelect>>',self.replay)
-
-    def field(self,parent,key,label,value):
-        row=tk.Frame(parent,bg=PANEL); row.pack(fill='x',padx=14,pady=3)
-        self.label(row,label,9).pack(side='left')
-        var=tk.StringVar(value=f'{value:g}'); self.vars[key]=var
-        ttk.Entry(row,textvariable=var,width=11,justify='right',state='readonly' if key in ('mount_y','outer_span') else 'normal').pack(side='right')
-
-    def read_geo(self): return Geometry(**{k:float(self.vars[k].get()) for k in self.geo.dict()})
-    def read_settings(self):
-        return Settings(**{k:float(self.vars[k].get()) for k in ['speed','friction','response','acceleration']})
-    def read_case(self):
-        return Case(self.pattern.get(),*[float(self.vars[k].get()) for k in ['angle','offset','spacing','stagger']],int(self.vars['seed'].get()),float(self.vars['orientation'].get()))
-
-    def sync_geo(self):
-        for k,v in self.geo.dict().items(): self.vars[k].set(f'{v:.6f}'.rstrip('0').rstrip('.'))
-        for side in ['left','right']: self.vars[side+'_angle'].set(f'{self.geo.side(side)["angle"]:.3f}')
-
-    def apply(self):
-        if self.busy: self.status.set('Stop the current test/search before changing its configuration.'); return False
-        try:
-            geo=self.read_geo().validate(); settings=self.read_settings(); case=self.read_case()
-            sim=Simulation(geo,settings,case)
-        except (ValueError,OverflowError) as e: messagebox.showerror('Check inputs',str(e)); return False
-        self.geo,self.settings,self.case,self.sim=geo,settings,case,sim
-        self.sync_geo(); self.running=True; self.play.configure(text='Pause'); self.accumulator=0
-        self.status.set('Inputs applied. All distances are mm; positive entry angles move balls toward the right.')
-        self.draw(); return True
-
-    def use_angles(self):
-        if self.busy: return
-        try:
-            g=self.read_geo()
-            for side in ['left','right']: g.set_angle(side,float(self.vars[side+'_angle'].get()))
-            g.validate()
-            for side in ['left','right']: self.vars[side+'_straight'].set(f'{getattr(g,side+"_straight"):.5f}')
-            self.apply()
-        except ValueError as e: messagebox.showerror('Angle does not fit',str(e))
-
-    def restore(self):
-        if self.busy: return
-        self.geo=Geometry(); self.sync_geo(); self.reset()
-
-    def reset(self):
-        self.sim=Simulation(self.geo,self.settings,self.case); self.running=True; self.accumulator=0
-        self.play.configure(text='Pause'); self.sync_geo(); self.draw()
-
-    def toggle(self):
-        self.running=not self.running; self.play.configure(text='Pause' if self.running else 'Play')
-
-    def step_once(self):
-        self.running=False; self.play.configure(text='Play')
-        if not self.sim.done: self.sim.step(round(.1/self.settings.dt))
-        self.draw()
-
-    def tick(self):
-        now=time.perf_counter(); elapsed=min(.06,now-self.last_clock); self.last_clock=now
-        if self.running and not self.busy and not self.sim.done:
-            self.accumulator+=elapsed*self.speed_factor.get()
-            n=min(120,int(self.accumulator/self.settings.dt))
-            if n: self.sim.step(n); self.accumulator-=n*self.settings.dt
-        self.poll(); self.draw(); self.root.after(25,self.tick)
-
-    def draw(self):
-        if not self.sim: return
-        c=self.canvas; c.delete('all'); w=max(c.winfo_width(),400); h=max(c.winfo_height(),250)
-        bottom=max(260,max((p[1] for p in self.sim.initial),default=210)+50)
-        half=max(210,self.geo.outer_span/2+60,max((abs(p[0]) for p in self.sim.initial),default=0)+45)
-        scale=min((w-70)/(2*half),(h-42)/(bottom+65)); cx=w/2; oy=50*scale+20
-        def xy(x,y): return cx+x*scale,oy+y*scale
-        def line(points,**kw): c.create_line(*[v for p in points for v in xy(*p)],**kw)
-        for x in range(-int(half)//25*25,int(half)+1,25): line([(x,-40),(x,bottom)],fill='#1a2c43')
-        for y in range(0,int(bottom)+1,25): line([(-half,y),(half,y)],fill='#1a2c43')
-        line([(0,-45),(0,bottom)],fill='#36516e',dash=(4,7))
         for side in ['left','right']:
-            g=self.geo.side(side)
-            c.create_polygon(*[v for p in g['polygon'] for v in xy(*p)],fill='#2a3b53',outline='#5e7594',width=1)
-            line(g['edge'],fill=CYAN,width=2.5)
-            sign=-1 if side=='left' else 1
-            for p in [(sign*84,0),(sign*84,self.geo.mount_y),(sign*self.geo.outer_span/2,self.geo.mount_y)]:
-                x,y=xy(*p); c.create_rectangle(x-3,y-3,x+3,y+3,fill=GOLD,outline='')
-            x,y=xy(sign*115,45)
-            c.create_text(x,y,text=f'{side.upper()}\n{g["angle"]:.1f}°\nR{getattr(self.geo,side+"_radius"):.1f}',fill=MUTED,font=('Segoe UI',9),justify='center')
-        line([(-84,0),(84,0)],fill=GOLD,dash=(3,4),width=1)
-        # Dimension annotations are visual references, not collision walls.
-        line([(-37.5,-12),(37.5,-12)],fill=TEXT,arrow='both')
-        x,y=xy(0,-25); c.create_text(x,y,text='75 mm outlet  ↑',fill=TEXT,font=('Segoe UI',10,'bold'))
-        line([(-84,self.geo.mount_y),(84,self.geo.mount_y)],fill='#60738e',dash=(4,5))
-        x,y=xy(0,self.geo.mount_y+8); c.create_text(x,y,text='168 mm mounts',fill=MUTED,font=('Segoe UI',9))
-        if self.show_trails.get():
-            for b in self.sim.balls:
-                if len(b['trail'])>1: line(b['trail'],fill='#3b6870',width=1)
-        for ball in self.sim.balls:
-            b=ball['body']; x,y=xy(*b.position); r=BALL_D/2*scale; color=COLORS[(ball['id']-1)%len(COLORS)]
-            c.create_oval(x-r,y-r,x+r,y+r,fill='#20364d',outline=color,width=2)
-            c.create_line(x,y,x+math.cos(b.angle)*r*.8,y+math.sin(b.angle)*r*.8,fill=color,width=1)
-            c.create_text(x,y,text=str(ball['id']),fill=TEXT,font=('Segoe UI',11,'bold'))
-            v=b.velocity
-            c.create_line(x,y,x+v.x*scale*.12,y+v.y*scale*.12,fill=color,arrow='last',width=1.5)
-        c.create_text(14,h-14,anchor='sw',text='Squares: fixed anchors    •    Colored arrows: actual velocity',fill=MUTED,font=('Segoe UI',9))
-        status='JAM DETECTED' if self.sim.jam_seen else ('FINISHED' if self.sim.done else 'RUNNING' if self.running else 'PAUSED')
-        self.stats.set(f'{self.sim.time:4.2f} s    |    Delivered {len(self.sim.exits)} / {self.sim.total}    |    Missed {len(self.sim.missed)}    |    {status}    |    Order: '+(' → '.join(str(x['id']) for x in self.sim.exits) or '—'))
+            for param,label in [('lip','lip'),('straight','outlet straight'),('radius','radius'),('drop','wedge drop'),('bow','wedge curve')]: self.field(form,side+'_'+param,side.title()+' '+label,getattr(self.geo,side+'_'+param))
+        for side in ['left','right']: self.field(form,side+'_angle',side.title()+' wall angle °',self.geo.side(side)['angle'])
+        self.button(form,'Use wall angles',self.use_angles).pack(fill='x',padx=14,pady=8); section('FIXED PHYSICS · provisional')
+        for k,label in [('speed','Target speed mm/s'),('friction','Contact friction'),('response','Drive response s'),('acceleration','Traction mm/s²')]: self.field(form,k,label,getattr(self.settings,k))
+        section('FIXED MOUNTS · mm')
+        for k,label in [('mount_y','Mounting depth'),('outer_span','Outer anchor span')]: self.field(form,k,label,getattr(self.geo,k))
+        for label,cmd in [('Apply & restart',self.apply),('Save as candidate',self.save_candidate),('Test this geometry',self.manual_tests),('Restore original CAD',self.restore),('Export geometry SVG',self.export_svg),('Save setup JSON',self.save_setup),('Load setup JSON',self.load_setup)]: self.button(form,label,cmd).pack(fill='x',padx=14,pady=4)
+        self.text(form,' ',9).pack(); right=tk.Frame(pane,bg=PANEL); pane.add(right,minsize=420)
+        bar=tk.Frame(right,bg=PANEL); bar.pack(fill='x',pady=(0,8))
+        self.play=self.button(bar,'Play',self.toggle); self.play.pack(side='left',padx=3)
+        self.button(bar,'Restart',self.reset).pack(side='left',padx=3); self.button(bar,'Step',self.step_once).pack(side='left',padx=3)
+        ttk.Combobox(bar,textvariable=self.speed_factor,values=[.25,.5,1,2,4],width=4,state='readonly').pack(side='left',padx=5); ttk.Checkbutton(bar,text='Trails',variable=self.show_trails).pack(side='left',padx=5)
+        self.stats=tk.StringVar(); self.text(right,var=self.stats,size=9,wraplength=700).pack(fill='x',pady=5)
+        self.canvas=tk.Canvas(right,bg='#101c2e',highlightthickness=0); self.canvas.pack(fill='both',expand=True); self.canvas.bind('<Configure>',lambda e:self.draw())
+        self.text(right,'Uncalibrated 2D physics · fixed friction · finite roller drive',9,MUTED).pack(fill='x',pady=8)
 
-    def start_job(self, fn):
-        if self.busy: return
+    def build_optimizer(self):
+        p=self.optimizer
+        self.text(p,'Find the shapes that stop jamming.',20,bold=True).pack(fill='x',padx=22,pady=(20,6))
+        self.text(p,'Survey widely → learn the jam cases → refine → validate on fresh tests',11,MUTED).pack(fill='x',padx=22,pady=(0,16))
+        boxes=tk.Frame(p,bg=PANEL); boxes.pack(fill='x',padx=20); self.config_vars={}; defaults=asdict(SearchConfig())
+        groups=[('01  BROAD SURVEY',[('broad_geometries','Geometries'),('broad_tests','Tests per geometry')]),('02  JAM-FOCUSED SEARCH',[('focused_geometries','New geometries'),('hard_tests','Hard tests'),('coverage_tests','Coverage tests'),('round_size','Reanalyze every')]),('03  FRESH VALIDATION',[('finalists','Finalists'),('validation_tests','Fresh tests'),('workers','CPU workers'),('seed','Search seed')])]
+        for i,(title,fields) in enumerate(groups):
+            box=tk.Frame(boxes,bg=CARD); box.grid(row=0,column=i,sticky='nsew',padx=(0,10)); boxes.columnconfigure(i,weight=1)
+            self.text(box,title,10,CYAN,True).pack(fill='x',padx=13,pady=(13,8))
+            for k,label in fields:
+                row=tk.Frame(box,bg=CARD); row.pack(fill='x',padx=13,pady=5); self.text(row,label,9,MUTED).pack(side='left')
+                v=tk.StringVar(value=str(defaults[k])); self.config_vars[k]=v; ttk.Entry(row,textvariable=v,width=9,justify='right').pack(side='right')
+            self.text(box,' ',5).pack()
+        bar=tk.Frame(p,bg=PANEL); bar.pack(fill='x',padx=22,pady=15)
+        self.button(bar,'Start new search',self.start_search,True).pack(side='left',padx=(0,8)); self.button(bar,'Pause & save',self.pause_search).pack(side='left',padx=4)
+        self.button(bar,'Resume saved search',self.resume_search).pack(side='left',padx=4); self.button(bar,'Open winner',self.open_winner).pack(side='right')
+        self.session_var=tk.StringVar(); self.session_combo=ttk.Combobox(p,textvariable=self.session_var,state='readonly'); self.session_combo.pack(fill='x',padx=22,pady=(0,8)); self.session_combo.bind('<<ComboboxSelected>>',self.session_changed)
+        self.progress_text=tk.StringVar(value='Default: 100 × 240 broad tests, then 2,000 focused candidates. Progress is saved locally.')
+        self.text(p,var=self.progress_text,size=10,wraplength=1000).pack(fill='x',padx=22,pady=7)
+        self.progress=ttk.Progressbar(p,mode='determinate'); self.progress.pack(fill='x',padx=22,pady=8)
+        self.text(p,'HARDEST JAM CASES',10,CYAN,True).pack(fill='x',padx=22,pady=(16,4))
+        self.text(p,'Each geometry votes once per test. Escaped balls are never penalized.',9,MUTED).pack(fill='x',padx=22,pady=(0,8))
+        frame=tk.Frame(p,bg=PANEL); frame.pack(fill='both',expand=True,padx=22,pady=(0,14))
+        self.hard_tree=self.tree(frame,{'case':'Formation','angle':'Entry','line':'Line','offset':'Offset','rate':'Jam rate','count':'Jams / tried'},[220,75,75,75,95,110],height=6)
+
+    def schedule_filter(self):
+        if self.refresh_pending: self.root.after_cancel(self.refresh_pending)
+        self.refresh_pending=self.root.after(150,self.refresh_library)
+    def refresh_library(self):
+        self.refresh_pending=None; rows=self.lib.candidates(); filt=self.filter_text.get().lower(); self.count_text.set(f'{len(rows):,} saved candidates • click to open tests')
+        visible=[r for r in rows if (self.scope.get()!='Current search' or r['session']==self.active_session) and (not filt or filt in (r['name']+' '+r['stage']).lower()) and (not self.only_stars.get() or r['starred'] or r['auto_star'])]
+        wanted={r['id'] for r in visible}
+        for cid in self.candidate_tree.get_children():
+            if cid not in wanted: self.candidate_tree.delete(cid)
+        for i,r in enumerate(visible):
+            vals=(('★ ' if r['starred'] or r['auto_star'] else '')+r['name'],r['stage'])
+            if self.candidate_tree.exists(r['id']): self.candidate_tree.item(r['id'],values=vals); self.candidate_tree.move(r['id'],'',i)
+            else: self.candidate_tree.insert('','end',iid=r['id'],values=vals)
+        self.library_dirty=False
+    def candidate_clicked(self,e=None):
+        ids=self.candidate_tree.selection()
+        if ids: self.select_candidate(ids[0])
+    def select_candidate(self,cid):
+        c=self.lib.candidate(cid)
+        if not c: return
+        self.selected=cid; self.title.set(('★ ' if c['starred'] or c['auto_star'] else '')+c['name']); g=Geometry(**c['geometry'])
+        self.geo=g; self.settings=Settings(**c['settings']); self.case=Case(); self.sync_inputs(); self.reset(); self.running=False; self.play.configure(text='Play')
+        self.candidate_meta.set(f'{c["stage"]}   •   Left {g.side("left")["angle"]:.1f}° / right {g.side("right")["angle"]:.1f}°   •   R{g.left_radius:.1f} / R{g.right_radius:.1f}   •   μ {self.settings.friction:g}   •   {c["session"][-6:]}')
+        self.thumb.delete('all'); scale=min(250/g.outer_span,110/(g.entrance_y+10)); cx=140
+        for side in ['left','right']:
+            pts=g.side(side)['polygon']; self.thumb.create_polygon(*[v for x,y in pts for v in (cx+x*scale,8+y*scale)],fill=CARD,outline=CYAN,width=1)
+        self.run_rows=self.lib.runs(cid); self.run_names=[f'{r["label"]}  ·  {r["status"]}' for r in self.run_rows]
+        self.run_combo.configure(values=self.run_names); self.run_var.set(self.run_names[0] if self.run_names else ''); self.show_run(); self.tabs.select(self.overview)
+    def sync_inputs(self):
+        self.sync_geo(); self.pattern.set(self.case.name)
+        for k in ['angle','orientation','offset','spacing','stagger','seed']: self.vars[k].set(str(getattr(self.case,k)))
+        for k in ['speed','friction','response','acceleration']: self.vars[k].set(str(getattr(self.settings,k)))
+    def show_run(self):
+        for iid in self.test_tree.get_children(): self.test_tree.delete(iid)
+        self.visible_results=[]; self.selected_run=None
+        if self.run_var.get() not in self.run_names:
+            for v in self.card_vars.values(): v.set('—')
+            self.run_info.set('No test runs yet. Open the live view to test this geometry.'); return
+        run=self.run_rows[self.run_names.index(self.run_var.get())]; self.selected_run=run['id']; results=self.lib.results(run['id']); s=metrics(results)
+        self.card_vars['jamfree'].set(f'{s["pass_rate"]:.1%}' if results else '—'); self.card_vars['jams'].set(str(s['jams'])); self.card_vars['runs'].set(f'{len(results)} / {run["expected"]}'); self.card_vars['misses'].set(str(s['missed']))
+        self.run_info.set(f'{run["label"]} · {run["status"]} · {s["fed"]}/{s["total"]} balls delivered (informational)')
+        self.visible_results=sorted([r for r in results if not self.jams_only.get() or r['jam']],key=lambda r:(not r['jam'],-r['max_stall']))
+        for i,r in enumerate(self.visible_results):
+            c=r['case']; self.test_tree.insert('','end',iid=str(i),values=(c['name'],f'{c["angle"]:+.1f}°',f'{c["orientation"]:+.1f}°',f'{c["offset"]:+.1f}', 'JAM' if r['jam'] else 'No jam',f'{r["fed"]}/{r["total"]}',r['max_stall']),tags=('jam' if r['jam'] else 'clear',))
+    def replay_selected(self,e=None):
+        ids=self.test_tree.selection()
+        if not ids: return
+        r=self.visible_results[int(ids[0])]; c=self.lib.candidate(self.selected); self.geo=Geometry(**c['geometry']); self.settings=Settings(**c['settings']); self.case=Case(**r['case'])
+        self.sync_inputs(); self.reset(); self.tabs.select(self.live); self.status.set('Replaying the selected candidate and test.')
+    def toggle_star(self):
+        if self.selected: self.lib.star(self.selected); self.refresh_library(); self.select_candidate(self.selected)
+    def save_candidate(self):
         if not self.apply(): return
+        cid=self.lib.add('Custom geometry '+time.strftime('%H:%M:%S'),self.geo.dict(),asdict(self.settings)); self.refresh_library(); self.select_candidate(cid)
+    def manual_tests(self):
+        if self.busy or not self.apply(): return
+        cid=self.lib.add('Tested geometry '+time.strftime('%H:%M:%S'),self.geo.dict(),asdict(self.settings),stage='Manual'); geo,settings=self.geo,self.settings
+        def job():
+            lib=Library(self.db_path)
+            try:
+                run=lib.run(cid,'Manual 137-case suite',suite())
+                def result(i,n,r):
+                    lib.save_results(run['id'],[r]); self.events.put({'candidate':cid,'done':i,'total':n,'message':f'Manual test {i}/{n}'})
+                evaluate(geo,settings,suite(),self.cancel.is_set,result)
+            finally: lib.close()
+        self.refresh_library(); self.select_candidate(cid); self.launch_job(job)
+    def config(self): return SearchConfig(**{k:int(v.get()) for k,v in self.config_vars.items()}).validate()
+    def start_search(self):
+        if self.busy: return
+        try:
+            config=self.config(); geo=self.read_geo().validate(); settings=self.read_settings(); Simulation(geo,settings,Case()); self.active_session=create_session(self.lib,geo,settings,config)
+        except (ValueError,TypeError) as e: messagebox.showerror('Check search inputs',str(e)); return
+        self.update_session(); sid=self.active_session; self.launch_job(lambda:SearchRunner(self.db_path,sid,self.cancel,self.events.put).run())
+        self.scope.set('Current search'); self.refresh_library()
+    def resume_search(self):
+        if self.busy or not self.active_session: return
+        if self.lib.state(self.active_session)['status']=='complete': self.status.set('This search is complete. Start a new search for another round.'); return
+        sid=self.active_session; self.launch_job(lambda:SearchRunner(self.db_path,sid,self.cancel,self.events.put).run())
+    def pause_search(self):
+        if self.busy: self.cancel.set(); self.progress_text.set('Pausing… saving completed tests and waiting for workers to stop.')
+    def launch_job(self,fn):
         self.busy=True; self.running=False; self.play.configure(text='Play'); self.cancel.clear()
         def work():
+            error=None
             try: fn()
-            except Exception as e: self.events.put(('error',str(e)))
-            finally: self.events.put(('done',None))
-        threading.Thread(target=work,daemon=True).start()
-
-    def batch(self):
-        def job():
-            results=evaluate(self.geo,self.settings,suite(),self.cancel.is_set,
-                             lambda i,n,r:self.events.put(('progress',f'Testing {i}/{n}: {r["case"]["name"]}, {r["case"]["angle"]:+g}°')))
-            self.events.put(('batch',results))
-        self.start_job(job)
-
-    def search(self):
-        def job():
-            def update(item):
-                s=item['summary']; self.events.put(('progress',f'Candidate {item["candidate"]+1}/24 • {s["fed"]}/{s["total"]} delivered • {s["jams"]} jams. Separate validation follows.'))
-            report=optimize(self.geo,self.settings,24,self.cancel.is_set,update)
-            self.events.put(('search',report))
-        self.start_job(job)
-
+            except Exception as e: error=str(e)
+            finally: self.events.put({'finished':True,'error':error,'message':('Error: '+error) if error else ('Paused and saved.' if self.cancel.is_set() else 'Job finished. Open candidates to inspect test runs.')})
+        self.job=threading.Thread(target=work,daemon=True); self.job.start()
     def poll(self):
+        changed=False
         while not self.events.empty():
-            kind,data=self.events.get()
-            if kind=='progress': self.status.set(data)
-            elif kind=='done': self.busy=False
-            elif kind=='error': self.status.set('Run failed: '+data)
-            elif kind=='batch':
-                self.batch_results=data; self.results_geo=Geometry(**self.geo.dict()); self.results_settings=Settings(**asdict(self.settings)); self.populate(data)
-                s=summarize(data); self.status.set(f'{s["cases"]} cases • {s["fed"]}/{s["total"]} delivered • {s["jams"]} jams • {s["unfinished"]} unfinished • {s["missed"]} missed. Select a row to replay.'+(' Stopped early.' if self.cancel.is_set() else ''))
-            elif kind=='search':
-                self.search_report=data
-                if data['cancelled']: self.status.set('Search stopped. No incomplete candidate applied.'); continue
-                self.best=Geometry(**data['best_geometry']); self.apply_best.configure(state='normal')
-                a,b=data['baseline_validation'],data['best_validation']
-                self.batch_results=data['validation_results']; self.results_geo=self.best; self.results_settings=Settings(**data['settings']); self.populate(self.batch_results)
-                self.status.set(f'Holdout: baseline {a["fed"]}/{a["total"]}, {a["jams"]} jams → candidate {b["fed"]}/{b["total"]}, {b["jams"]} jams. Inspect replays before adopting it.')
-                (HERE/'latest_search.json').write_text(json.dumps(data,indent=2),encoding='utf-8')
-
-    def populate(self,results):
-        for i in self.table.get_children(): self.table.delete(i)
-        for i,r in enumerate(results):
-            desc=f'{r["case"]["name"]} · line {r["case"]["orientation"]:+g}° · x {r["case"]["offset"]:+g}'
-            self.table.insert('', 'end',iid=str(i),values=(desc,f'{r["case"]["angle"]:+g}°',f'{r["fed"]}/{r["total"]}', 'YES' if r['jam'] else '—',r['last_exit'],r['missed']))
-
-    def replay(self,e=None):
-        if self.busy: return
-        selected=self.table.selection()
-        if not selected: return
-        r=self.batch_results[int(selected[0])]
-        self.geo=Geometry(**self.results_geo.dict()); self.settings=Settings(**asdict(self.results_settings)); self.case=Case(**r['case'])
-        self.pattern.set(self.case.name)
-        for k in ['angle','offset','spacing','stagger','seed','orientation']: self.vars[k].set(str(getattr(self.case,k)))
-        for k in ['speed','friction','response','acceleration']: self.vars[k].set(str(getattr(self.settings,k)))
-        self.sync_geo(); self.reset(); self.status.set('Replaying the exact geometry, settings and entry scenario from this result.')
-
-    def use_best(self):
-        if self.best and not self.busy:
-            self.geo=Geometry(**self.best.dict()); self.sync_geo(); self.reset()
-            if self.search_report:
-                a=self.search_report['baseline_validation']; b=self.search_report['best_validation']
-                self.status.set(f'Candidate applied for inspection. Holdout delivered: baseline {a["fed"]}/{a["total"]} → candidate {b["fed"]}/{b["total"]}; jams {a["jams"]} → {b["jams"]}.')
-
-    def save_setup(self):
-        if not self.apply(): return
-        path=filedialog.asksaveasfilename(initialdir=HERE,defaultextension='.json',initialfile='my_funnel.json')
-        if path: Path(path).write_text(json.dumps({'geometry':self.geo.dict(),'settings':asdict(self.settings),'case':asdict(self.case)},indent=2),encoding='utf-8')
-
-    def load_setup(self):
-        if self.busy: return
-        path=filedialog.askopenfilename(initialdir=HERE,filetypes=[('Setup JSON','*.json')])
-        if not path: return
-        try:
-            data=json.loads(Path(path).read_text(encoding='utf-8'))
-            geo=Geometry(**data['geometry']); settings=Settings(**data['settings']); case=Case(**data['case'])
-            sim=Simulation(geo,settings,case)
-            self.geo,self.settings,self.case,self.sim=geo,settings,case,sim
-            self.sync_geo(); self.pattern.set(case.name)
-            for k in ['angle','offset','spacing','stagger','seed','orientation']: self.vars[k].set(str(getattr(case,k)))
-            for k in ['speed','friction','response','acceleration']: self.vars[k].set(str(getattr(settings,k)))
-            self.reset()
-        except (ValueError,TypeError,KeyError) as e: messagebox.showerror('Cannot load setup',str(e))
-
-    def export_svg(self):
-        if not self.apply(): return
-        path=filedialog.asksaveasfilename(initialdir=HERE,defaultextension='.svg',initialfile='funnel_geometry.svg')
-        if path: write_svg(self.geo,path); self.status.set('SVG saved at 1 mm per drawing unit with your confirmed anchor dimensions.')
-
+            d=self.events.get(); self.status.set(d.get('message','')); self.progress_text.set(d.get('message','')); changed=True
+            if 'done' in d: self.progress.configure(maximum=d['total'],value=d['done'])
+            if d.get('error'): self.status.set('Error: '+d['error'])
+            if d.get('finished'):
+                self.busy=False; self.update_session(); self.refresh_library()
+                if self.selected:
+                    # Refresh test records without replacing an in-progress replay/editor.
+                    old_run=self.run_var.get(); self.run_rows=self.lib.runs(self.selected)
+                    self.run_names=[f'{r["label"]}  ·  {r["status"]}' for r in self.run_rows]
+                    self.run_combo.configure(values=self.run_names)
+                    self.run_var.set(old_run if old_run in self.run_names else (self.run_names[0] if self.run_names else ''))
+                    self.show_run()
+        if changed: self.library_dirty=True
+        if self.library_dirty and time.monotonic()-self.last_refresh>3:
+            self.refresh_library(); self.refresh_hardness(); self.last_refresh=time.monotonic()
+    def update_session(self):
+        sessions=self.lib.sessions(); self.session_ids=[s['id'] for s in sessions]; self.session_names=[f'{s["id"][-10:]} · {s["status"]} · {json.loads(s["state"])["phase"]}' for s in sessions]
+        self.session_combo.configure(values=self.session_names)
+        if self.active_session in self.session_ids: self.session_var.set(self.session_names[self.session_ids.index(self.active_session)])
+        self.refresh_hardness()
+    def session_changed(self,e=None):
+        if self.busy: self.update_session(); return
+        if self.session_var.get() in self.session_names:
+            self.active_session=self.session_ids[self.session_names.index(self.session_var.get())]; self.refresh_hardness(); self.refresh_library()
+    def refresh_hardness(self):
+        for iid in self.hard_tree.get_children(): self.hard_tree.delete(iid)
+        if not self.active_session: return
+        for i,r in enumerate(self.lib.hardness(self.active_session)[:50]):
+            c=r['case']; self.hard_tree.insert('','end',iid=str(i),values=(c['name'],f'{c["angle"]:+.1f}°',f'{c["orientation"]:+.1f}°',f'{c["offset"]:+.1f}',f'{r["rate"]:.0%}',f'{r["failures"]}/{r["attempts"]}'))
+    def open_winner(self):
+        if not self.active_session: return
+        winner=self.lib.state(self.active_session)['state'].get('winner')
+        if winner: self.select_candidate(winner)
+        else: self.status.set('A winner is chosen only after fresh validation completes.')
     def export_results(self):
-        if not self.batch_results: self.status.set('Run test cases or a search first.'); return
-        path=filedialog.asksaveasfilename(initialdir=HERE,defaultextension='.json',initialfile='test_results.json')
+        if self.selected_run is None: return
+        path=filedialog.asksaveasfilename(initialdir=HERE,defaultextension='.json',initialfile='candidate_test_run.json')
         if not path: return
-        p=Path(path)
-        p.write_text(json.dumps({'geometry':self.results_geo.dict(),'settings':asdict(self.results_settings),'summary':summarize(self.batch_results),'results':self.batch_results,'search':self.search_report},indent=2),encoding='utf-8')
-        with p.with_suffix('.csv').open('w',newline='',encoding='utf-8') as f:
-            rows=[{**r['case'],**{k:v for k,v in r.items() if k not in ('case','order')},'order':' '.join(map(str,r['order']))} for r in self.batch_results]
-            writer=csv.DictWriter(f,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
-        self.status.set('Saved detailed JSON plus a matching CSV table.')
-
-    def close(self): self.cancel.set(); self.root.destroy()
-
-def write_svg(geo,path):
-    width=geo.outer_span+20; height=geo.entrance_y+20
-    parts=[f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}mm" height="{height}mm" viewBox="{-width/2} -10 {width} {height}">',
-           '<title>Funnel geometry in mm; 75 mm outlet, 168 mm mounts, 280.35 mm outer anchors</title>']
-    for side in ['left','right']:
-        pts=' '.join(f'{x:.5f},{y:.5f}' for x,y in geo.side(side)['polygon'])
-        parts.append(f'<polygon points="{pts}" fill="none" stroke="black" stroke-width="0.15"/>')
-    parts.append('</svg>'); Path(path).write_text('\n'.join(parts),encoding='utf-8')
+        results=self.lib.results(self.selected_run); candidate=self.lib.candidate(self.selected); Path(path).write_text(json.dumps({'candidate':candidate,'results':results,'summary':metrics(results)},indent=2))
+        if results:
+            with Path(path).with_suffix('.csv').open('w',newline='') as f:
+                rows=[{**r['case'],**{k:v for k,v in r.items() if k not in ('case','order')}} for r in results]; writer=csv.DictWriter(f,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
+        self.status.set('Exported this candidate’s selected run as JSON and CSV.')
+    def close(self):
+        if self.busy: self.pause_search(); self.root.after(150,self.wait_close)
+        else: self.lib.close(); self.root.destroy()
+    def wait_close(self):
+        if self.job and self.job.is_alive(): self.root.after(150,self.wait_close)
+        else: self.lib.close(); self.root.destroy()
 
 if __name__=='__main__':
-    root=tk.Tk(); app=App(root)
+    mp.freeze_support(); root=tk.Tk(); app=App(root)
     if '--capture' in sys.argv:
         from PIL import ImageGrab
-        app.running=False; app.sim.step(500); app.draw(); root.update()
+        root.update()
         def capture():
             try: ImageGrab.grab(window=int(root.tk.call('wm','frame',root._w),16)).save(HERE/'preview.png')
-            finally: root.destroy()
-        root.after(400,capture)
-        root.mainloop()
-    elif '--smoke' in sys.argv:
-        root.update(); app.running=False; app.step_once()
-        assert app.canvas.find_all() and app.sim.time>.09
-        app.pattern.set('Two abreast'); app.vars['angle'].set('25'); assert app.apply()
-        app.sim.step(960); app.draw(); root.update()
-        print('GUI smoke passed: controls, canvas, apply, stepping, diagonal input.')
-        root.destroy()
-    else: root.mainloop()
+            finally: app.close()
+        root.after(500,capture)
+    root.mainloop()

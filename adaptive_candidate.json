@@ -1,0 +1,34 @@
+{
+  "geometry": {
+    "left_bow": -6,
+    "left_drop": 48.04074,
+    "left_lip": 25,
+    "left_radius": 32.49689,
+    "left_straight": 87.27052,
+    "mount_y": 107.38628,
+    "outer_span": 280.35,
+    "right_bow": -2.08489,
+    "right_drop": 35.51413,
+    "right_lip": 4.65074,
+    "right_radius": 23.8464,
+    "right_straight": 4.89749
+  },
+  "settings": {
+    "acceleration": 2500.0,
+    "dt": 0.0010416666666666667,
+    "duration": 8.0,
+    "friction": 0.25,
+    "response": 0.08,
+    "speed": 220.0,
+    "stall_time": 1.5
+  },
+  "case": {
+    "name": "Four abreast",
+    "angle": 0.0,
+    "offset": 0.0,
+    "spacing": 80.0,
+    "stagger": 0.0,
+    "seed": 1,
+    "orientation": 0.0
+  }
+}
