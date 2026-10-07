@@ -85,8 +85,8 @@ class App(Viewer):
         self.filter_text=tk.StringVar(); ttk.Entry(side,textvariable=self.filter_text).pack(fill='x',padx=12,pady=10)
         self.filter_text.trace_add('write',lambda *a:self.schedule_filter()); self.only_stars=tk.BooleanVar(value=False)
         ttk.Checkbutton(side,text='Starred candidates only',variable=self.only_stars,command=self.refresh_library).pack(anchor='w',padx=14,pady=(0,10))
-        self.candidate_tree=self.tree(side,{'candidate':'Candidate','score':'Clear %','stage':'Stage'},[145,65,60]); self.candidate_tree.bind('<<TreeviewSelect>>',self.candidate_clicked)
-        self.thumb=tk.Canvas(side,bg=PANEL,height=125,highlightthickness=0); self.thumb.pack(fill='x',padx=14,pady=(8,0))
+        self.candidate_tree=self.tree(side,{'candidate':'Candidate','score':'Clear %','stage':'Stage'},[145,65,60],height=5); self.candidate_tree.bind('<<TreeviewSelect>>',self.candidate_clicked)
+        self.thumb=tk.Canvas(side,bg=PANEL,height=85,highlightthickness=0); self.thumb.pack(fill='x',padx=14,pady=(8,0))
         if not self.read_only: self.button(side,'★  Toggle favorite',self.toggle_star).pack(fill='x',padx=12,pady=10)
         self.button(side,'Clear history · keep stars',lambda:self.clear_history('unstarred')).pack(fill='x',padx=12,pady=(8,4))
         self.button(side,'Clear starred candidates',lambda:self.clear_history('starred')).pack(fill='x',padx=12,pady=(0,10))
@@ -310,7 +310,7 @@ class App(Viewer):
         self.selected=cid; self.title.set(('★ ' if c['starred'] or c['auto_star'] else '')+c['name']); g=Geometry(**c['geometry'])
         self.geo=g; self.settings=Settings(**c['settings']); self.case=Case(); self.sync_inputs(); self.reset(); self.running=False; self.play.configure(text='Play')
         self.candidate_meta.set(f'{c["stage"]}   •   Left {g.side("left")["angle"]:.1f}° / right {g.side("right")["angle"]:.1f}°   •   R{g.left_radius:.1f} / R{g.right_radius:.1f}   •   μ {self.settings.friction:g}   •   {c["session"][-6:]}')
-        self.thumb.delete('all'); scale=min(250/g.outer_span,110/(g.entrance_y+10)); cx=140
+        self.thumb.delete('all'); scale=min(250/g.outer_span,70/(g.entrance_y+10)); cx=140
         for side in ['left','right']:
             pts=g.side(side)['polygon']; self.thumb.create_polygon(*[v for x,y in pts for v in (cx+x*scale,8+y*scale)],fill=CARD,outline=CYAN,width=1)
         self.run_rows=self.lib.runs(cid); self.run_names=[f'{r["label"]}  ·  {r["status"]}' for r in self.run_rows]
