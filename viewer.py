@@ -62,7 +62,7 @@ class Viewer:
         self.play.configure(text='Pause'); self.sync_geo(); self.draw()
 
     def toggle(self):
-        self.running=bool(self.sim) and not self.running; self.play.configure(text='Pause' if self.running else 'Play')
+        self.running=bool(self.sim) and not self.running; self.play.configure(text='Pause' if self.running else 'Play'); self.draw()
 
     def step_once(self):
         self.running=False; self.play.configure(text='Play')
@@ -71,11 +71,15 @@ class Viewer:
 
     def tick(self):
         now=time.perf_counter(); elapsed=min(.06,now-self.last_clock); self.last_clock=now
-        if self.running and not self.sim.done:
+        visible=not hasattr(self,'tabs') or self.tabs.select()==str(self.live)
+        changed=False
+        if self.running and self.sim and not self.sim.done and visible:
             self.accumulator+=elapsed*self.speed_factor.get()
             n=min(120,int(self.accumulator/self.settings.dt))
-            if n: self.sim.step(n); self.accumulator-=n*self.settings.dt
-        self.poll(); self.draw(); self.root.after(25,self.tick)
+            if n: self.sim.step(n); self.accumulator-=n*self.settings.dt; changed=True
+        self.poll()
+        if changed: self.draw()
+        self.tick_id=self.root.after(25,self.tick)
 
     def draw(self):
         if not self.sim: return

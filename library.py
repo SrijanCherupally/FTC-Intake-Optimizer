@@ -65,7 +65,7 @@ class Library:
                   SELECT c.session,c.id,t.case_key,json_extract(t.payload,'$.case'),
                          json_extract(t.payload,'$.jam'),json_extract(t.payload,'$.missed')
                   FROM results t JOIN runs r ON t.run=r.id JOIN candidates c ON c.id=r.candidate
-                  WHERE c.session<>'' AND (r.label='Broad survey' OR r.label LIKE 'Focus %')''')
+                  WHERE c.session<>'' AND (r.label LIKE 'Broad survey%' OR r.label LIKE 'Focus %')''')
     def close(self): self.db.close()
     def clear_history(self,mode='unstarred'):
         """Delete selected history, invalidate checkpoints, and reclaim disk space."""
@@ -123,14 +123,21 @@ class Library:
         return [dict(r) for r in self.db.execute('SELECT * FROM runs WHERE candidate=? ORDER BY id DESC',(cid,))]
     def results(self,run_id):
         return [json.loads(r[0]) for r in self.db.execute('SELECT payload FROM results WHERE run=? ORDER BY rowid',(run_id,))]
-    def cache(self,cid):
-        return {r[0]:json.loads(r[1]) for r in self.db.execute('''SELECT t.case_key,t.payload FROM results t
-          JOIN runs r ON t.run=r.id WHERE r.candidate=? ORDER BY r.id''',(cid,))}
+    def cache(self,cid,full=True,case_keys=None):
+        # Filter before decoding and deduplicate repeated run payloads in SQL.
+        query='SELECT t.case_key,t.payload FROM results t JOIN runs r ON t.run=r.id WHERE r.candidate=?'
+        params=[cid]
+        if full: query+=" AND COALESCE(json_extract(t.payload,'$.censored'),0)=0"
+        if case_keys is not None:
+            if not case_keys: return {}
+            query+=' AND t.case_key IN ('+','.join('?' for _ in case_keys)+')'; params.extend(case_keys)
+        query+=' GROUP BY t.case_key'
+        return {r[0]:json.loads(r[1]) for r in self.db.execute(query,params)}
     def save_results(self,run_id,results):
         with self.db:
             self.db.executemany('INSERT OR REPLACE INTO results VALUES(?,?,?)',[(run_id,key(r['case']),encode(r)) for r in results])
             run=self.db.execute('SELECT r.label,c.id,c.session FROM runs r JOIN candidates c ON c.id=r.candidate WHERE r.id=?',(run_id,)).fetchone()
-            if run['session'] and (run['label']=='Broad survey' or run['label'].startswith('Focus ')):
+            if run['session'] and (run['label'].startswith('Broad survey') or run['label'].startswith('Focus ')):
                 self.db.executemany('INSERT OR REPLACE INTO training_votes VALUES(?,?,?,?,?,?)',
                   [(run['session'],run['id'],key(r['case']),encode(r['case']),int(r['jam']),r['missed']) for r in results])
             actual=self.results(run_id)

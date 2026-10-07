@@ -7,7 +7,7 @@ A live Python physics simulator and jam-focused geometry optimizer for the FTC i
 Open a terminal in this project folder. On this computer, the wrapper finds the bundled Python runtime:
 
 ```powershell
-.\train.cmd start                 # Full 100 + 2,000 geometry search
+.\train.cmd start                 # Fast adaptive search (up to 2,000 refinements)
 .\train.cmd start --quick         # Small end-to-end setup check
 .\train.cmd status                # Latest session and saved progress
 .\train.cmd pause                 # Request a checkpoint from another terminal
@@ -43,21 +43,29 @@ Both buttons ask for confirmation. Cleanup removes search checkpoints and hard-c
 
 ## Adaptive optimizer
 
-The default pipeline is:
+The default is now a staged search:
 
-1. **Broad survey:** 100 geometries, each tested on the same 240 environments. These balance 2, 3 and 4 balls, with varied approach angle, independent ball-line orientation, offset, ball spacing and stagger.
-2. **Learn the jams:** count how often each test causes a jam across different geometries. A repeated cached result does not cast another vote. Escaped balls are not failures.
-3. **Focused refinement:** try 2,000 new geometries. Each uses 48 difficult tests plus 12 rotating coverage tests. After every 100 new geometries, recompute which cases are hardest. Mutate strong candidates locally, shrink the mutation range over time, and keep occasional broad random exploration.
-4. **Fair comparisons:** reevaluate incumbents on the exact same cohort as challengers in each round. At the end, compare the accumulated round champions on the full 240-case training suite.
-5. **Fresh validation:** the top six screening candidates, plus the original search baseline if needed, each get the same 300 fresh environments. None of these holdout results feeds the geometry mutations. Rank them and star the top three. The baseline is eligible to win.
+1. **Broad survey:** sample 100 geometries. All see the same first 12 training environments; roughly the best third advance to 36, then 108, then the full 240. The baseline is always retained. The 240 environments balance 2, 3 and 4 balls with varied approach, ball-line orientation, offset, spacing and stagger.
+2. **Learn useful jam cases:** deduplicate each geometry's vote. Mix persistently difficult cases with cases that distinguish successful geometries from unsuccessful ones. Misses are never failures.
+3. **Focused refinement:** generate up to 2,000 geometries in rounds of 100. Screen each round on 12, then 36, then all 60 cases (48 difficult/discriminating plus 12 rotating coverage cases). Keep approximately one third at each screen, with at least six survivors and the existing elites protected. Only complete common-cohort results select the next elites.
+4. **Stop diminishing returns:** compare round leaders on the same 48 fixed training cases. After at least 400 refinements, four consecutive rounds without improvement move the search to final screening. Improvement means fewer jams, or the same jams and mean stall at least 0.01 s lower. Each flat round also shrinks local mutations so the search tries finer adjustments before stopping; occasional broad samples remain. These are training cases, never holdout cases.
+5. **Full screening and fresh validation:** round champions and the baseline receive the full 240 training tests. The best six plus the baseline receive all 300 fresh validation tests, at the full duration. Rank these complete results and star the best three. Validation results do not feed mutations or the plateau rule.
+
+Exploratory screens can end a simulation after a confirmed jam, because the model's `jam_seen` flag is permanent. Such records are labeled **JAM · early**: elapsed time, stall, and delivery statistics describe only the simulated portion. Replays continue the full test. Early records are excluded from the full-result cache and rerun to completion if their geometry advances to full testing. Eliminated runs say **screened out**; they are not validated candidates.
+
+Staged selection is a speed/coverage tradeoff: an early sample can discard a candidate that would do better on later tests, and plateau stopping can miss later improvements. Full validation checks the finalists, not discarded shapes. For exhaustive selection use `train.cmd start --exhaustive`; this also disables plateau stopping. `--racing 0` disables just staged screening; `--patience 0` disables just plateau stopping. Other controls include `--screen-tests`, `--reduction`, `--min-focused`, `--progress-tests`, and `--batch-size`.
+
+The optimized physics loop uses the same Chipmunk contacts and drive arithmetic while avoiding temporary Python vector/contact objects; batch simulations skip drawing trails. Eight-test work batches keep workers occupied even when only a few finalists remain. The database only decodes relevant cached cases, and progress writes are throttled. The viewer stops redrawing paused/hidden replays and only refreshes the hardest-case table while it is visible. None of these changes lowers the timestep, contact iterations, curve resolution, or friction fidelity. Pymunk is pinned to 7.2.0; the fast loop uses its underlying CFFI accessors.
+
+New searches use these defaults. Existing sessions without the new configuration fields retain exhaustive selection on resume, with the faster physics and work scheduling. Resuming preserves staged decisions and results already saved.
 
 **The objective is jam rate, then mean stall duration. Missed balls, delivered fraction and elapsed travel time do not affect ranking.** A no-jam test can include balls escaping outside the wedge. Delivery and misses remain visible for interpretation. Automatic stars mean best among the evaluated candidates, not proof of a jam-free real robot or a global optimum.
 
-All counts and CPU workers are adjustable. The 100 + 2,000 default is a substantial CPU job; duration depends on the processor and how long each scenario stalls. The CLI runs simulations in worker processes; the viewer can remain open independently. The fixed 960 Hz physics step and 50 solver iterations are not reduced for throughput.
+All counts and CPU workers are adjustable. The 2,000 refinement count is an upper budget; actual runtime depends on screening survival, plateau stopping, and the processor. The CLI runs simulations in worker processes; the viewer can remain open independently. The fixed 960 Hz physics step and 50 solver iterations are not reduced for throughput.
 
 Completed tests, including partial candidate runs, are saved to the shared database. The trainer checkpoints on Ctrl+C, `train.cmd pause`, or its time limit. Leave the terminal running to continue training after closing the viewer.
 
-A small coverage sample remains during refinement because a geometry change can break an environment that worked for a previous candidate. The full easy suite is not rerun for every refinement candidate. A run is budgeted by the configured number of candidates; it does not keep consuming CPU indefinitely waiting for a perfect score.
+A small coverage sample remains during refinement because a geometry change can break an environment that worked for a previous candidate. The full easy suite is not rerun for every refinement candidate. A run is limited by the configured maximum candidate count and plateau rule; it does not keep consuming CPU indefinitely waiting for a perfect score.
 
 ## Saved files
 
@@ -94,7 +102,15 @@ This is a **planar transfer screening model**, not a validated digital twin. It 
 
 To improve real-world agreement, record a straight four-ball pickup and an angled pickup with your actual roller speed. Measure single-ball travel speed and compare observed stalls/exit timing. Calibrate the fixed friction and drive settings once, then rerun the geometry tests. A rigid planar simulation cannot prove that a physical mechanism never jams.
 
+## Speed benchmark
+
+`python benchmark_training.py` compares exhaustive and staged search with the same seed, geometry budget, physics, worker count, and fresh validation cases. It writes `training_benchmark.json`; both modes use the optimized physics loop. This is a reduced-budget measurement, not a prediction for every full search.
+
+Measured on this computer: exhaustive **115.5 s / 3,321 simulations**, staged **40.2 s / 1,434 simulations**: **2.88x faster**, **56.8% fewer simulations**. Winner jams on the same 60 fresh cases: 11 exhaustive, 9 staged. Plateau stopping was disabled in this comparison, so this does not count its additional trial savings. These numbers do not promise the same speedup or better quality on every seed.
+
 ## Verification and command-line use
+
+`python test_training_speed.py` checks early-jam/full-cache separation, staged pause/resume, complete finalist validation, and the fixed-cohort plateau rule.
 
 `python test_studio.py` checks jam-only scoring, independent scenario generation, candidate/run persistence, hard-case selection, cached-vote deduplication, pause/resume through the real multiprocessing physics pipeline, independent holdout sets, automatic stars, and native candidate selection/replay.
 

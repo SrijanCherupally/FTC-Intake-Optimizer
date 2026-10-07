@@ -92,6 +92,8 @@ class App(Viewer):
         self.overview=tk.Frame(self.tabs,bg=PANEL); self.live=tk.Frame(self.tabs,bg=PANEL); self.optimizer=tk.Frame(self.tabs,bg=PANEL)
         for frame,title in [(self.overview,'Candidate & tests'),(self.live,'Replay' if self.read_only else 'Live simulation'),(self.optimizer,'Training monitor' if self.read_only else 'Adaptive optimizer')]: self.tabs.add(frame,text=title)
         self.build_overview(); self.build_live(); self.build_optimizer()
+        self.hardness_refresh=0.
+        self.tabs.bind('<<NotebookTabChanged>>',lambda e:self.refresh_hardness(force=True))
         self.status=tk.StringVar(value='Select a geometry to inspect its test runs.'); self.text(right,var=self.status,size=9,color=MUTED,wraplength=1000).pack(fill='x',pady=(10,0))
 
     def build_overview(self):
@@ -138,7 +140,7 @@ class App(Viewer):
         bar=tk.Frame(right,bg=PANEL); bar.pack(fill='x',pady=(0,8))
         self.play=self.button(bar,'Play',self.toggle); self.play.pack(side='left',padx=3)
         self.button(bar,'Restart',self.reset).pack(side='left',padx=3); self.button(bar,'Step',self.step_once).pack(side='left',padx=3)
-        ttk.Combobox(bar,textvariable=self.speed_factor,values=[.25,.5,1,2,4],width=4,state='readonly').pack(side='left',padx=5); ttk.Checkbutton(bar,text='Trails',variable=self.show_trails).pack(side='left',padx=5)
+        ttk.Combobox(bar,textvariable=self.speed_factor,values=[.25,.5,1,2,4],width=4,state='readonly').pack(side='left',padx=5); ttk.Checkbutton(bar,text='Trails',variable=self.show_trails,command=self.draw).pack(side='left',padx=5)
         self.stats=tk.StringVar(); self.text(right,var=self.stats,size=9,wraplength=700).pack(fill='x',pady=5)
         self.canvas=tk.Canvas(right,bg='#101c2e',highlightthickness=0); self.canvas.pack(fill='both',expand=True); self.canvas.bind('<Configure>',lambda e:self.draw())
         self.text(right,'Uncalibrated 2D physics · fixed friction · finite roller drive',9,MUTED).pack(fill='x',pady=8)
@@ -187,7 +189,7 @@ class App(Viewer):
         self.play=self.button(bar,'Play',self.toggle); self.play.pack(side='left',padx=3)
         self.button(bar,'Restart',self.reset).pack(side='left',padx=3); self.button(bar,'Step',self.step_once).pack(side='left',padx=3)
         ttk.Combobox(bar,textvariable=self.speed_factor,values=[.25,.5,1,2,4],width=4,state='readonly').pack(side='left',padx=8)
-        ttk.Checkbutton(bar,text='Trails',variable=self.show_trails).pack(side='left')
+        ttk.Checkbutton(bar,text='Trails',variable=self.show_trails,command=self.draw).pack(side='left')
         self.button(bar,'Export geometry SVG',self.export_svg).pack(side='right')
         self.stats=tk.StringVar(); self.text(right,var=self.stats,size=10).pack(fill='x',pady=12)
         self.canvas=tk.Canvas(right,bg='#101c2e',highlightthickness=0); self.canvas.pack(fill='both',expand=True)
@@ -242,7 +244,8 @@ class App(Viewer):
                     new.close(); raise
                 self.lib.close(); self.lib=new; self.db_version=None
             version=self.lib.db.execute('PRAGMA data_version').fetchone()[0]
-            if not force and version==self.db_version: return
+            if not force and version==self.db_version:
+                self.refresh_hardness(); return
             self.db_version=version
             sessions=self.lib.sessions()
             if self.active_session not in {s['id'] for s in sessions}: self.active_session=sessions[0]['id'] if sessions else None
@@ -309,10 +312,10 @@ class App(Viewer):
             self.run_info.set('No saved test runs yet. Training results appear automatically.'); return
         run=self.run_rows[self.run_names.index(self.run_var.get())]; self.selected_run=run['id']; results=self.lib.results(run['id']); s=metrics(results)
         self.card_vars['jamfree'].set(f'{s["pass_rate"]:.1%}' if results else '—'); self.card_vars['jams'].set(str(s['jams'])); self.card_vars['runs'].set(f'{len(results)} / {run["expected"]}'); self.card_vars['misses'].set(str(s['missed']))
-        self.run_info.set(f'{run["label"]} · {run["status"]} · {s["fed"]}/{s["total"]} balls delivered (informational)')
+        self.run_info.set(f'{run["label"]} · {run["status"]} · {s["fed"]}/{s["total"]} balls delivered (informational)'+(' · Early jam screens: timing/stalls are lower bounds; replay continues the full test.' if any(r.get('censored') for r in results) else ''))
         self.visible_results=sorted([r for r in results if not self.jams_only.get() or r['jam']],key=lambda r:(not r['jam'],-r['max_stall']))
         for i,r in enumerate(self.visible_results):
-            c=r['case']; self.test_tree.insert('','end',iid=str(i),values=(c['name'],f'{c["angle"]:+.1f}°',f'{c["orientation"]:+.1f}°',f'{c["offset"]:+.1f}', 'JAM' if r['jam'] else 'No jam',f'{r["fed"]}/{r["total"]}',r['max_stall']),tags=('jam' if r['jam'] else 'clear',))
+            c=r['case']; self.test_tree.insert('','end',iid=str(i),values=(c['name'],f'{c["angle"]:+.1f}°',f'{c["orientation"]:+.1f}°',f'{c["offset"]:+.1f}', ('JAM · early' if r.get('censored') else 'JAM') if r['jam'] else 'No jam',f'{r["fed"]}/{r["total"]}',r['max_stall']),tags=('jam' if r['jam'] else 'clear',))
     def replay_selected(self,e=None):
         ids=self.test_tree.selection()
         if not ids: return
@@ -387,8 +390,12 @@ class App(Viewer):
     def session_changed(self,e=None):
         if self.busy: self.update_session(); return
         if self.session_var.get() in self.session_names:
-            self.active_session=self.session_ids[self.session_names.index(self.session_var.get())]; self.refresh_hardness(); self.refresh_library(); self.monitor_progress()
-    def refresh_hardness(self):
+            self.active_session=self.session_ids[self.session_names.index(self.session_var.get())]; self.refresh_hardness(force=True); self.refresh_library(); self.monitor_progress()
+    def refresh_hardness(self,force=False):
+        if self.active_session:
+            if self.tabs.select()!=str(self.optimizer): return
+            if not force and time.monotonic()-self.hardness_refresh<10: return
+        self.hardness_refresh=time.monotonic()
         for iid in self.hard_tree.get_children(): self.hard_tree.delete(iid)
         if not self.active_session: return
         for i,r in enumerate(self.lib.hardness(self.active_session)[:50]):
@@ -405,9 +412,11 @@ class App(Viewer):
         results=self.lib.results(self.selected_run); candidate=self.lib.candidate(self.selected); Path(path).write_text(json.dumps({'candidate':candidate,'results':results,'summary':metrics(results)},indent=2))
         if results:
             with Path(path).with_suffix('.csv').open('w',newline='') as f:
-                rows=[{**r['case'],**{k:v for k,v in r.items() if k not in ('case','order')}} for r in results]; writer=csv.DictWriter(f,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
+                rows=[{**r['case'],**{k:v for k,v in r.items() if k not in ('case','order')}} for r in results]; writer=csv.DictWriter(f,fieldnames=list(dict.fromkeys(k for row in rows for k in row))); writer.writeheader(); writer.writerows(rows)
         self.status.set('Exported this candidate’s selected run as JSON and CSV.')
     def close(self):
+        if hasattr(self,'tick_id'): self.root.after_cancel(self.tick_id)
+        if self.refresh_pending: self.root.after_cancel(self.refresh_pending); self.refresh_pending=None
         if self.busy: self.pause_search(); self.root.after(150,self.wait_close)
         else: self.lib.close(); self.root.destroy()
     def wait_close(self):

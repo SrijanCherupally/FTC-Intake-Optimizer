@@ -1,0 +1,1576 @@
+{
+  "source": "physics.py before speed optimization, Git d93cd16",
+  "tests": [
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": -1.133,
+        "offset": 25.388,
+        "spacing": 78.291,
+        "stagger": -7.903,
+        "seed": 1,
+        "orientation": 3.7
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": -1.133,
+          "offset": 25.388,
+          "spacing": 78.291,
+          "stagger": -7.903,
+          "seed": 1,
+          "orientation": 3.7
+        },
+        "fed": 0,
+        "total": 2,
+        "remaining": 2,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.472,
+        "slow_fraction": 0.9665,
+        "max_overlap_mm": 0.1353,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": -32.478,
+        "offset": -9.178,
+        "spacing": 87.174,
+        "stagger": 4.451,
+        "seed": 1,
+        "orientation": -61.093
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": -32.478,
+          "offset": -9.178,
+          "spacing": 87.174,
+          "stagger": 4.451,
+          "seed": 1,
+          "orientation": -61.093
+        },
+        "fed": 2,
+        "total": 3,
+        "remaining": 0,
+        "missed": 1,
+        "jam": false,
+        "elapsed": 2.272,
+        "last_exit": 2.15,
+        "largest_gap": 0.916,
+        "max_stall": 0.0,
+        "slow_fraction": 0.2561,
+        "max_overlap_mm": 0.1295,
+        "order": [
+          3,
+          2
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -21.409,
+        "offset": -24.77,
+        "spacing": 84.76,
+        "stagger": 0.381,
+        "seed": 1,
+        "orientation": -40.09
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -21.409,
+          "offset": -24.77,
+          "spacing": 84.76,
+          "stagger": 0.381,
+          "seed": 1,
+          "orientation": -40.09
+        },
+        "fed": 0,
+        "total": 4,
+        "remaining": 3,
+        "missed": 1,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 6.062,
+        "slow_fraction": 0.8785,
+        "max_overlap_mm": 0.1348,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": 20.671,
+        "offset": -22.021,
+        "spacing": 81.363,
+        "stagger": 6.554,
+        "seed": 1,
+        "orientation": 1.948
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": 20.671,
+          "offset": -22.021,
+          "spacing": 81.363,
+          "stagger": 6.554,
+          "seed": 1,
+          "orientation": 1.948
+        },
+        "fed": 2,
+        "total": 2,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 1.693,
+        "last_exit": 1.693,
+        "largest_gap": 0.437,
+        "max_stall": 0.0,
+        "slow_fraction": 0.2651,
+        "max_overlap_mm": 0.1495,
+        "order": [
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": -18.258,
+        "offset": -16.11,
+        "spacing": 81.937,
+        "stagger": -11.213,
+        "seed": 1,
+        "orientation": -13.522
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": -18.258,
+          "offset": -16.11,
+          "spacing": 81.937,
+          "stagger": -11.213,
+          "seed": 1,
+          "orientation": -13.522
+        },
+        "fed": 3,
+        "total": 3,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 3.025,
+        "last_exit": 3.025,
+        "largest_gap": 1.006,
+        "max_stall": 0.0,
+        "slow_fraction": 0.4719,
+        "max_overlap_mm": 0.0848,
+        "order": [
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -7.752,
+        "offset": 18.325,
+        "spacing": 87.349,
+        "stagger": -10.069,
+        "seed": 1,
+        "orientation": 34.937
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -7.752,
+          "offset": 18.325,
+          "spacing": 87.349,
+          "stagger": -10.069,
+          "seed": 1,
+          "orientation": 34.937
+        },
+        "fed": 4,
+        "total": 4,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 2.781,
+        "last_exit": 2.781,
+        "largest_gap": 0.506,
+        "max_stall": 0.0,
+        "slow_fraction": 0.3461,
+        "max_overlap_mm": 0.1378,
+        "order": [
+          2,
+          3,
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": -32.957,
+        "offset": 25.655,
+        "spacing": 75.046,
+        "stagger": 4.088,
+        "seed": 1,
+        "orientation": -23.739
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": -32.957,
+          "offset": 25.655,
+          "spacing": 75.046,
+          "stagger": 4.088,
+          "seed": 1,
+          "orientation": -23.739
+        },
+        "fed": 2,
+        "total": 2,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 1.931,
+        "last_exit": 1.931,
+        "largest_gap": 0.437,
+        "max_stall": 0.0,
+        "slow_fraction": 0.3379,
+        "max_overlap_mm": 0.1839,
+        "order": [
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": 21.861,
+        "offset": -15.932,
+        "spacing": 83.7,
+        "stagger": -7.927,
+        "seed": 1,
+        "orientation": -21.748
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": 21.861,
+          "offset": -15.932,
+          "spacing": 83.7,
+          "stagger": -7.927,
+          "seed": 1,
+          "orientation": -21.748
+        },
+        "fed": 0,
+        "total": 3,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.272,
+        "slow_fraction": 0.946,
+        "max_overlap_mm": 0.201,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 10.0,
+        "right_lip": 4.0,
+        "left_straight": 73.218984,
+        "right_straight": 24.0,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -40.65,
+        "offset": 24.404,
+        "spacing": 78.501,
+        "stagger": -5.674,
+        "seed": 1,
+        "orientation": 27.588
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -40.65,
+          "offset": 24.404,
+          "spacing": 78.501,
+          "stagger": -5.674,
+          "seed": 1,
+          "orientation": 27.588
+        },
+        "fed": 1,
+        "total": 4,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 1.919,
+        "largest_gap": 0,
+        "max_stall": 5.961,
+        "slow_fraction": 0.9005,
+        "max_overlap_mm": 0.058,
+        "order": [
+          3
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": -1.133,
+        "offset": 25.388,
+        "spacing": 78.291,
+        "stagger": -7.903,
+        "seed": 1,
+        "orientation": 3.7
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": -1.133,
+          "offset": 25.388,
+          "spacing": 78.291,
+          "stagger": -7.903,
+          "seed": 1,
+          "orientation": 3.7
+        },
+        "fed": 2,
+        "total": 2,
+        "remaining": 0,
+        "missed": 0,
+        "jam": false,
+        "elapsed": 2.046,
+        "last_exit": 2.046,
+        "largest_gap": 0.557,
+        "max_stall": 0.0,
+        "slow_fraction": 0.4109,
+        "max_overlap_mm": 0.1353,
+        "order": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": -32.478,
+        "offset": -9.178,
+        "spacing": 87.174,
+        "stagger": 4.451,
+        "seed": 1,
+        "orientation": -61.093
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": -32.478,
+          "offset": -9.178,
+          "spacing": 87.174,
+          "stagger": 4.451,
+          "seed": 1,
+          "orientation": -61.093
+        },
+        "fed": 2,
+        "total": 3,
+        "remaining": 0,
+        "missed": 1,
+        "jam": false,
+        "elapsed": 2.272,
+        "last_exit": 1.936,
+        "largest_gap": 0.643,
+        "max_stall": 0.0,
+        "slow_fraction": 0.2359,
+        "max_overlap_mm": 0.057,
+        "order": [
+          3,
+          2
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -21.409,
+        "offset": -24.77,
+        "spacing": 84.76,
+        "stagger": 0.381,
+        "seed": 1,
+        "orientation": -40.09
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -21.409,
+          "offset": -24.77,
+          "spacing": 84.76,
+          "stagger": 0.381,
+          "seed": 1,
+          "orientation": -40.09
+        },
+        "fed": 0,
+        "total": 4,
+        "remaining": 3,
+        "missed": 1,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 6.062,
+        "slow_fraction": 0.8749,
+        "max_overlap_mm": 0.1208,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": 20.671,
+        "offset": -22.021,
+        "spacing": 81.363,
+        "stagger": 6.554,
+        "seed": 1,
+        "orientation": 1.948
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": 20.671,
+          "offset": -22.021,
+          "spacing": 81.363,
+          "stagger": 6.554,
+          "seed": 1,
+          "orientation": 1.948
+        },
+        "fed": 0,
+        "total": 2,
+        "remaining": 2,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.472,
+        "slow_fraction": 0.9577,
+        "max_overlap_mm": 0.0765,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": -18.258,
+        "offset": -16.11,
+        "spacing": 81.937,
+        "stagger": -11.213,
+        "seed": 1,
+        "orientation": -13.522
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": -18.258,
+          "offset": -16.11,
+          "spacing": 81.937,
+          "stagger": -11.213,
+          "seed": 1,
+          "orientation": -13.522
+        },
+        "fed": 0,
+        "total": 3,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.172,
+        "slow_fraction": 0.9518,
+        "max_overlap_mm": 0.0898,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -7.752,
+        "offset": 18.325,
+        "spacing": 87.349,
+        "stagger": -10.069,
+        "seed": 1,
+        "orientation": 34.937
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -7.752,
+          "offset": 18.325,
+          "spacing": 87.349,
+          "stagger": -10.069,
+          "seed": 1,
+          "orientation": 34.937
+        },
+        "fed": 1,
+        "total": 4,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 1.331,
+        "largest_gap": 0,
+        "max_stall": 6.568,
+        "slow_fraction": 0.8825,
+        "max_overlap_mm": 0.1245,
+        "order": [
+          2
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": -32.957,
+        "offset": 25.655,
+        "spacing": 75.046,
+        "stagger": 4.088,
+        "seed": 1,
+        "orientation": -23.739
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": -32.957,
+          "offset": 25.655,
+          "spacing": 75.046,
+          "stagger": 4.088,
+          "seed": 1,
+          "orientation": -23.739
+        },
+        "fed": 0,
+        "total": 2,
+        "remaining": 2,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.372,
+        "slow_fraction": 0.9489,
+        "max_overlap_mm": 0.1746,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": 21.861,
+        "offset": -15.932,
+        "spacing": 83.7,
+        "stagger": -7.927,
+        "seed": 1,
+        "orientation": -21.748
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": 21.861,
+          "offset": -15.932,
+          "spacing": 83.7,
+          "stagger": -7.927,
+          "seed": 1,
+          "orientation": -21.748
+        },
+        "fed": 0,
+        "total": 3,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.172,
+        "slow_fraction": 0.9423,
+        "max_overlap_mm": 0.1701,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 4,
+        "right_lip": 4,
+        "left_straight": 50,
+        "right_straight": 50,
+        "left_radius": 30.0,
+        "right_radius": 30.0,
+        "left_drop": 40.0,
+        "right_drop": 40.0,
+        "left_bow": 0.0,
+        "right_bow": 0.0
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -40.65,
+        "offset": 24.404,
+        "spacing": 78.501,
+        "stagger": -5.674,
+        "seed": 1,
+        "orientation": 27.588
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -40.65,
+          "offset": 24.404,
+          "spacing": 78.501,
+          "stagger": -5.674,
+          "seed": 1,
+          "orientation": 27.588
+        },
+        "fed": 0,
+        "total": 4,
+        "remaining": 4,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 6.871,
+        "slow_fraction": 0.94,
+        "max_overlap_mm": 0.1587,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": -1.133,
+        "offset": 25.388,
+        "spacing": 78.291,
+        "stagger": -7.903,
+        "seed": 1,
+        "orientation": 3.7
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": -1.133,
+          "offset": 25.388,
+          "spacing": 78.291,
+          "stagger": -7.903,
+          "seed": 1,
+          "orientation": 3.7
+        },
+        "fed": 1,
+        "total": 2,
+        "remaining": 0,
+        "missed": 1,
+        "jam": false,
+        "elapsed": 1.72,
+        "last_exit": 1.3,
+        "largest_gap": 0,
+        "max_stall": 0.0,
+        "slow_fraction": 0.2426,
+        "max_overlap_mm": 0.0496,
+        "order": [
+          1
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": -32.478,
+        "offset": -9.178,
+        "spacing": 87.174,
+        "stagger": 4.451,
+        "seed": 1,
+        "orientation": -61.093
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": -32.478,
+          "offset": -9.178,
+          "spacing": 87.174,
+          "stagger": 4.451,
+          "seed": 1,
+          "orientation": -61.093
+        },
+        "fed": 0,
+        "total": 3,
+        "remaining": 0,
+        "missed": 3,
+        "jam": false,
+        "elapsed": 2.243,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 0.0,
+        "slow_fraction": 0.1793,
+        "max_overlap_mm": 0.0872,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -21.409,
+        "offset": -24.77,
+        "spacing": 84.76,
+        "stagger": 0.381,
+        "seed": 1,
+        "orientation": -40.09
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -21.409,
+          "offset": -24.77,
+          "spacing": 84.76,
+          "stagger": 0.381,
+          "seed": 1,
+          "orientation": -40.09
+        },
+        "fed": 0,
+        "total": 4,
+        "remaining": 3,
+        "missed": 1,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 6.062,
+        "slow_fraction": 0.8661,
+        "max_overlap_mm": 0.1975,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": 20.671,
+        "offset": -22.021,
+        "spacing": 81.363,
+        "stagger": 6.554,
+        "seed": 1,
+        "orientation": 1.948
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": 20.671,
+          "offset": -22.021,
+          "spacing": 81.363,
+          "stagger": 6.554,
+          "seed": 1,
+          "orientation": 1.948
+        },
+        "fed": 0,
+        "total": 2,
+        "remaining": 2,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.372,
+        "slow_fraction": 0.9455,
+        "max_overlap_mm": 0.1144,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": -18.258,
+        "offset": -16.11,
+        "spacing": 81.937,
+        "stagger": -11.213,
+        "seed": 1,
+        "orientation": -13.522
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": -18.258,
+          "offset": -16.11,
+          "spacing": 81.937,
+          "stagger": -11.213,
+          "seed": 1,
+          "orientation": -13.522
+        },
+        "fed": 0,
+        "total": 3,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 6.871,
+        "slow_fraction": 0.9451,
+        "max_overlap_mm": 0.1599,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -7.752,
+        "offset": 18.325,
+        "spacing": 87.349,
+        "stagger": -10.069,
+        "seed": 1,
+        "orientation": 34.937
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -7.752,
+          "offset": 18.325,
+          "spacing": 87.349,
+          "stagger": -10.069,
+          "seed": 1,
+          "orientation": 34.937
+        },
+        "fed": 1,
+        "total": 4,
+        "remaining": 0,
+        "missed": 3,
+        "jam": false,
+        "elapsed": 2.924,
+        "last_exit": 2.504,
+        "largest_gap": 0,
+        "max_stall": 0.0,
+        "slow_fraction": 0.3804,
+        "max_overlap_mm": 0.1216,
+        "order": [
+          1
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Two abreast",
+        "angle": -32.957,
+        "offset": 25.655,
+        "spacing": 75.046,
+        "stagger": 4.088,
+        "seed": 1,
+        "orientation": -23.739
+      },
+      "result": {
+        "case": {
+          "name": "Two abreast",
+          "angle": -32.957,
+          "offset": 25.655,
+          "spacing": 75.046,
+          "stagger": 4.088,
+          "seed": 1,
+          "orientation": -23.739
+        },
+        "fed": 0,
+        "total": 2,
+        "remaining": 2,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.372,
+        "slow_fraction": 0.9457,
+        "max_overlap_mm": 0.0617,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Three abreast",
+        "angle": 21.861,
+        "offset": -15.932,
+        "spacing": 83.7,
+        "stagger": -7.927,
+        "seed": 1,
+        "orientation": -21.748
+      },
+      "result": {
+        "case": {
+          "name": "Three abreast",
+          "angle": 21.861,
+          "offset": -15.932,
+          "spacing": 83.7,
+          "stagger": -7.927,
+          "seed": 1,
+          "orientation": -21.748
+        },
+        "fed": 0,
+        "total": 3,
+        "remaining": 3,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 7.072,
+        "slow_fraction": 0.9367,
+        "max_overlap_mm": 0.1804,
+        "order": []
+      }
+    },
+    {
+      "geometry": {
+        "mount_y": 107.38628,
+        "outer_span": 280.35,
+        "left_lip": 15.98567,
+        "right_lip": 16.91749,
+        "left_straight": 26.95287,
+        "right_straight": 8.52001,
+        "left_radius": 6.25054,
+        "right_radius": 49.60898,
+        "left_drop": 37.27659,
+        "right_drop": 48.2057,
+        "left_bow": 2.83765,
+        "right_bow": -5.64243
+      },
+      "settings": {
+        "speed": 220.0,
+        "friction": 0.25,
+        "response": 0.08,
+        "acceleration": 2500.0,
+        "dt": 0.0010416666666666667,
+        "duration": 8.0,
+        "stall_time": 1.5
+      },
+      "case": {
+        "name": "Four abreast",
+        "angle": -40.65,
+        "offset": 24.404,
+        "spacing": 78.501,
+        "stagger": -5.674,
+        "seed": 1,
+        "orientation": 27.588
+      },
+      "result": {
+        "case": {
+          "name": "Four abreast",
+          "angle": -40.65,
+          "offset": 24.404,
+          "spacing": 78.501,
+          "stagger": -5.674,
+          "seed": 1,
+          "orientation": 27.588
+        },
+        "fed": 0,
+        "total": 4,
+        "remaining": 4,
+        "missed": 0,
+        "jam": true,
+        "elapsed": 8.001,
+        "last_exit": 0,
+        "largest_gap": 0,
+        "max_stall": 6.669,
+        "slow_fraction": 0.9345,
+        "max_overlap_mm": 0.1331,
+        "order": []
+      }
+    }
+  ]
+}

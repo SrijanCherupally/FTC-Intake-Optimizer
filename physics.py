@@ -3,6 +3,7 @@ import sys, math, random
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / 'vendor'))
 import pymunk
+from pymunk._chipmunk_cffi import lib as cp
 from dataclasses import dataclass, asdict
 from geometry import Geometry, BALL_D
 
@@ -59,7 +60,8 @@ def suite(held_out=False):
     return cases
 
 class Simulation:
-    def __init__(self, geo=None, settings=None, case=None):
+    def __init__(self, geo=None, settings=None, case=None, record_trails=True):
+        self.record_trails=record_trails
         self.geo=(geo or Geometry()).validate()
         self.settings=settings or Settings()
         self.case=case or Case()
@@ -116,31 +118,41 @@ class Simulation:
             shape=pymunk.Circle(b,BALL_D/2)
             shape.friction=mu; shape.elasticity=0
             self.space.add(b,shape)
-            self.balls.append({'id':idx+1,'body':b,'shape':shape,'trail':[], 'best':b.position.y})
+            self.balls.append({'id':idx+1,'body':b,'shape':shape,'trail':[], 'best':b.position.y, 'native':b._body, 'moment':b.moment})
         self.total=len(self.balls)
         self.initial=[(b['body'].position.x,b['body'].position.y) for b in self.balls]
 
     def _contact(self, arbiter, space, data):
-        for p in arbiter.contact_point_set.points:
-            self.max_overlap=max(self.max_overlap,-p.distance)
+        # Same contact data as Pymunk's property, without constructing Python
+        # ContactPoint/Vec2d objects for every contact at every 960 Hz step.
+        points=cp.cpArbiterGetContactPointSet(arbiter._arbiter)
+        overlap=self.max_overlap
+        for i in range(points.count):
+            overlap=max(overlap,-points.points[i].distance)
+        self.max_overlap=overlap
 
     def step(self, steps=1):
         s=self.settings; dt=s.dt
+        angle=math.radians(self.case.angle)
+        tx=s.speed*math.sin(angle); ty=-s.speed*math.cos(angle)
+        entry=self.geo.entrance_y; inside_y=entry+BALL_D/2
+        limit=s.acceleration; sqrt=math.sqrt
+        position=cp.cpBodyGetPosition; velocity=cp.cpBodyGetVelocity
+        force=cp.cpBodySetForce; torque=cp.cpBodySetTorque; spin=cp.cpBodyGetAngularVelocity
         for _ in range(steps):
             if self.done: break
-            a=math.radians(self.case.angle)
             for ball in self.balls:
-                b=ball['body']
-                # Once the ball reaches the wedge, every position is driven upward.
-                inside=b.position.y<=self.geo.entrance_y+BALL_D/2
-                target=pymunk.Vec2d(0,-s.speed) if inside else pymunk.Vec2d(s.speed*math.sin(a),-s.speed*math.cos(a))
-                accel=(target-b.velocity)/s.response
-                if accel.length>s.acceleration: accel=accel.normalized()*s.acceleration
-                b.force=accel*b.mass
-                b.torque=-b.angular_velocity*b.moment/0.12
+                body=ball['native']; pos=position(body); vel=velocity(body)
+                inside=pos.y<=inside_y
+                ax=((0 if inside else tx)-vel.x)/s.response
+                ay=((-s.speed if inside else ty)-vel.y)/s.response
+                length=sqrt(ax*ax+ay*ay)
+                if length>limit: ax=ax/length*limit; ay=ay/length*limit
+                # Every ball has normalized mass 1, exactly as before.
+                force(body,(ax,ay)); torque(body,-spin(body)*ball['moment']/0.12)
             self.space.step(dt); self.time+=dt
             for ball in list(self.balls):
-                b=ball['body']; x,y=b.position
+                b=ball['body']; pos=position(ball['native']); x,y=pos.x,pos.y
                 if y < -BALL_D/2-2:
                     if abs(x)<=(75-BALL_D)/2+.05:
                         self.exits.append({'id':ball['id'],'time':self.time})
@@ -154,15 +166,16 @@ class Simulation:
                     gain=max(0,ball['best']-y); ball['best']=min(ball['best'],y)
                     self._progress+=gain
             if self.time-self._window_time>=.1:
-                active=[b for b in self.balls if b['body'].position.y<=self.geo.entrance_y+BALL_D]
+                active=[b for b in self.balls if position(b['native']).y<=entry+BALL_D]
                 # No new forward progress: vibration in place does not clear a jam.
                 if active and self._progress<.3: self.stalled+=self.time-self._window_time
                 else: self.stalled=0
                 self.max_stall=max(self.max_stall,self.stalled)
                 if self.stalled>=s.stall_time: self.jam_seen=True
                 for b in self.balls:
-                    b['trail'].append(tuple(b['body'].position)); b['trail']=b['trail'][-100:]
-                    self._slow_sum+=max(0,1-max(0,-b['body'].velocity.y)/s.speed)
+                    if self.record_trails:
+                        b['trail'].append(tuple(b['body'].position)); b['trail']=b['trail'][-100:]
+                    self._slow_sum+=max(0,1-max(0,-velocity(b['native']).y)/s.speed)
                     self._samples+=1
                 self._progress=0; self._window_time=self.time
 

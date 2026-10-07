@@ -23,6 +23,7 @@ def parser():
         if command in ['resume','pause','status','export']: s.add_argument('session',nargs='?',default='latest')
         if command in ['start','resume']: s.add_argument('--max-seconds',type=float,help='Pause cleanly after this many seconds')
         if command=='start':
+            s.add_argument('--exhaustive',action='store_true',help='Disable staged screening and plateau stopping; evaluate every candidate fully')
             s.add_argument('--quick',action='store_true',help='Small complete pipeline for checking setup')
             source=s.add_mutually_exclusive_group(); source.add_argument('--setup',type=Path); source.add_argument('--from-candidate')
             for name in asdict(SearchConfig()): s.add_argument('--'+name.replace('_','-'),type=int,default=None)
@@ -72,6 +73,7 @@ def main(argv=None):
             if args.command=='start':
                 config=asdict(SearchConfig(**(QUICK if args.quick else {})))
                 config.update({k:getattr(args,k) for k in config if getattr(args,k) is not None})
+                if args.exhaustive: config.update(racing=0,patience=0)
                 config=SearchConfig(**config).validate()
                 source={}
                 if args.setup: source=json.loads(args.setup.read_text(encoding='utf-8'))
@@ -109,7 +111,14 @@ def main(argv=None):
             if args.max_seconds:
                 timer=threading.Timer(args.max_seconds,stop.set); timer.daemon=True; timer.start()
             if not args.json: print(f'Session: {sid}\nDatabase: {Path(args.db).resolve()}\nCtrl+C pauses safely. The viewer may be open separately.',flush=True)
-            state=SearchRunner(args.db,sid,stop,notify).run()
+            runner=SearchRunner(args.db,sid,stop,notify)
+            if not args.json:
+                c=runner.config
+                mode='staged screening' if c.racing else 'exhaustive testing'
+                print(f'Plan: {c.broad_geometries} broad + up to {c.focused_geometries} refined geometries; {mode}; {c.workers} workers.',flush=True)
+                if c.patience: print(f'Stop refining after {c.patience} flat rounds, once {c.min_focused} refinements have been tried.',flush=True)
+                print(f'Finalists always receive all {c.validation_tests} fresh validation tests.',flush=True)
+            state=runner.run()
             if args.json: print(json.dumps({'event':'stopped','session':sid,'state':state}),flush=True)
             if state['phase']=='complete' and not args.json: print(f'Winner: {state["winner"]}',flush=True)
             elif not args.json: print(f'Resume with: python train.py --db "{Path(args.db).resolve()}" resume {sid}',flush=True)
