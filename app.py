@@ -78,10 +78,14 @@ class App(Viewer):
         self.scope=tk.StringVar(value='All candidates')
         scope_combo=ttk.Combobox(side,textvariable=self.scope,values=['All candidates','Current search'],state='readonly')
         scope_combo.pack(fill='x',padx=12,pady=(10,0)); scope_combo.bind('<<ComboboxSelected>>',lambda e:self.refresh_library())
+        self.sort_order=tk.StringVar(value='Stars first')
+        self.sort_combo=ttk.Combobox(side,textvariable=self.sort_order,values=['Stars first','Best first','Worst first','Newest first'],state='readonly')
+        self.sort_combo.pack(fill='x',padx=12,pady=(8,0)); self.sort_combo.bind('<<ComboboxSelected>>',lambda e:self.refresh_library())
+        self.text(side,'Score: jam-free % · stall breaks ties\n* provisional; different tests may differ',8,MUTED,justify='left').pack(fill='x',padx=14,pady=(5,0))
         self.filter_text=tk.StringVar(); ttk.Entry(side,textvariable=self.filter_text).pack(fill='x',padx=12,pady=10)
         self.filter_text.trace_add('write',lambda *a:self.schedule_filter()); self.only_stars=tk.BooleanVar(value=False)
         ttk.Checkbutton(side,text='Starred candidates only',variable=self.only_stars,command=self.refresh_library).pack(anchor='w',padx=14,pady=(0,10))
-        self.candidate_tree=self.tree(side,{'candidate':'Candidate','stage':'Stage'},[195,70]); self.candidate_tree.bind('<<TreeviewSelect>>',self.candidate_clicked)
+        self.candidate_tree=self.tree(side,{'candidate':'Candidate','score':'Clear %','stage':'Stage'},[145,65,60]); self.candidate_tree.bind('<<TreeviewSelect>>',self.candidate_clicked)
         self.thumb=tk.Canvas(side,bg=PANEL,height=125,highlightthickness=0); self.thumb.pack(fill='x',padx=14,pady=(8,0))
         if not self.read_only: self.button(side,'★  Toggle favorite',self.toggle_star).pack(fill='x',padx=12,pady=10)
         self.button(side,'Clear history · keep stars',lambda:self.clear_history('unstarred')).pack(fill='x',padx=12,pady=(8,4))
@@ -278,11 +282,22 @@ class App(Viewer):
     def refresh_library(self):
         self.refresh_pending=None; rows=self.lib.candidates(); filt=self.filter_text.get().lower(); self.count_text.set(f'{len(rows):,} saved candidates • click to open tests')
         visible=[r for r in rows if (self.scope.get()!='Current search' or r['session']==self.active_session) and (not filt or filt in (r['name']+' '+r['stage']).lower()) and (not self.only_stars.get() or r['starred'] or r['auto_star'])]
+        scores=self.lib.candidate_scores()
+        order=self.sort_order.get()
+        if order in ('Best first','Worst first'):
+            direction=-1 if order=='Best first' else 1
+            def score_key(row):
+                score=scores.get(row['id'])
+                if not score: return (1,0,0,-row['created'],row['id'])
+                return (0,direction*score['pass_rate'],-direction*score['mean_stall'],-row['created'],row['id'])
+            visible.sort(key=score_key)
+        elif order=='Newest first': visible.sort(key=lambda row:(-row['created'],row['id']))
         wanted={r['id'] for r in visible}
         for cid in self.candidate_tree.get_children():
             if cid not in wanted: self.candidate_tree.delete(cid)
         for i,r in enumerate(visible):
-            vals=(('★ ' if r['starred'] or r['auto_star'] else '')+r['name'],r['stage'])
+            score=scores.get(r['id']); display=(f'{score["pass_rate"]:.0%}'+('' if score['validated'] else '*')) if score else '—'
+            vals=(('★ ' if r['starred'] or r['auto_star'] else '')+r['name'],display,r['stage'])
             if self.candidate_tree.exists(r['id']): self.candidate_tree.item(r['id'],values=vals); self.candidate_tree.move(r['id'],'',i)
             else: self.candidate_tree.insert('','end',iid=r['id'],values=vals)
         self.library_dirty=False

@@ -109,6 +109,25 @@ class Library:
     def candidates(self):
         rows=self.db.execute('SELECT * FROM candidates ORDER BY (starred OR auto_star) DESC,created DESC').fetchall()
         return [dict(r) for r in rows]
+    def candidate_scores(self):
+        """Read saved summaries only; never rescan simulation payloads for sorting."""
+        rows=self.db.execute('''WITH scored AS (
+          SELECT candidate,label,summary,
+            ROW_NUMBER() OVER (PARTITION BY candidate ORDER BY
+              CASE WHEN label='Fresh validation' THEN 0
+                   WHEN label='Finalist screening' THEN 1
+                   WHEN label='Broad survey' THEN 2
+                   WHEN instr(label,' · screen ')=0 THEN 3 ELSE 4 END,
+              expected DESC,id DESC) AS preference
+          FROM runs WHERE status IN ('complete','screened out') AND expected>0
+            AND json_extract(summary,'$.cases')=expected)
+          SELECT candidate,label,summary FROM scored WHERE preference=1''')
+        scores={}
+        for row in rows:
+            summary=json.loads(row['summary'])
+            scores[row['candidate']]={'pass_rate':summary['pass_rate'],'mean_stall':summary['mean_stall'],
+                                      'label':row['label'],'validated':row['label']=='Fresh validation'}
+        return scores
     def star(self,cid):
         with self.db: self.db.execute('UPDATE candidates SET starred=1-starred WHERE id=?',(cid,))
     def run(self,cid,label,cases):

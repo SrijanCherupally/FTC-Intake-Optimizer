@@ -32,6 +32,8 @@ Both programs default to `data/funnel_lab.sqlite3` beside their source files, re
 
 The left sidebar lists geometry candidates. Click one to open its test groups: Broad survey, a Focus round, Finalist screening, or Fresh validation. Each reports completed/expected counts. Click a test to replay its exact geometry, physics settings, and incoming formation. Replay controls include speed, trails, restart, and single stepping. Filter **Jams only** to inspect failures, or **Starred candidates only** to see automatically selected finalists and existing favorites.
 
+Use the candidate sidebar sort dropdown for **Best first**, **Worst first**, **Newest first**, or **Stars first**. Quality sorts use jam-free percentage, then mean stall time; misses do not affect ranking. Unscored/unfinished candidates remain at the bottom. Scores prefer complete fresh validation, then complete finalist screening, broad survey, other complete runs, and finally exploratory screens. An asterisk marks provisional scores; comparisons across different test cohorts or searches are approximate. Existing filters still apply.
+
 The **Training monitor** tab shows saved sessions, progress, and hardest jam cases. **Open validated winner** opens the winner only after fresh validation finishes. Automatic stars mark the top three validated candidates. Different test groups use different environments, so their scores should not be compared directly. Geometry SVG and run JSON/CSV exports remain available; the viewer cannot edit geometries or scores.
 
 ## Clear saved data
