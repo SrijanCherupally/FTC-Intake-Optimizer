@@ -8,6 +8,7 @@ from tkinter import ttk, filedialog, messagebox
 from geometry import Geometry
 from physics import Settings, Case, PATTERNS, Simulation, suite
 from viewer import Viewer, write_svg
+from testing_panel import TestingPanel
 from library import Library, metrics
 from adaptive import SearchConfig, SearchRunner, create_session
 from search import evaluate
@@ -15,7 +16,7 @@ from search import evaluate
 HERE=Path(__file__).resolve().parent
 BG='#0b1020'; PANEL='#131d31'; CARD='#19253c'; TEXT='#e8effc'; MUTED='#90a2bf'; CYAN='#67ddd0'; GOLD='#f6c879'; RED='#fb9eaa'
 
-class App(Viewer):
+class App(TestingPanel,Viewer):
     def __init__(self,root,db_path=None,read_only=True):
         self.read_only=read_only; self.db_version=None
         self.root=root; root.title('Funnel Lab · Results Viewer' if read_only else 'Funnel Lab · Candidate Studio')
@@ -94,8 +95,9 @@ class App(Viewer):
         right=tk.Frame(body,bg=BG); right.pack(side='left',fill='both',expand=True)
         self.tabs=ttk.Notebook(right); self.tabs.pack(fill='both',expand=True)
         self.overview=tk.Frame(self.tabs,bg=PANEL); self.live=tk.Frame(self.tabs,bg=PANEL); self.optimizer=tk.Frame(self.tabs,bg=PANEL)
-        for frame,title in [(self.overview,'Candidate & tests'),(self.live,'Replay' if self.read_only else 'Live simulation'),(self.optimizer,'Training monitor' if self.read_only else 'Adaptive optimizer')]: self.tabs.add(frame,text=title)
-        self.build_overview(); self.build_live(); self.build_optimizer()
+        self.testing=tk.Frame(self.tabs,bg=PANEL)
+        for frame,title in [(self.overview,'Candidate & tests'),(self.testing,'Test candidate'),(self.live,'Replay' if self.read_only else 'Live simulation'),(self.optimizer,'Training monitor' if self.read_only else 'Adaptive optimizer')]: self.tabs.add(frame,text=title)
+        self.build_overview(); self.build_live(); self.build_optimizer(); self.build_testing()
         self.hardness_refresh=0.
         self.tabs.bind('<<NotebookTabChanged>>',lambda e:self.refresh_hardness(force=True))
         self.status=tk.StringVar(value='Select a geometry to inspect its test runs.'); self.text(right,var=self.status,size=9,color=MUTED,wraplength=1000).pack(fill='x',pady=(10,0))
@@ -216,6 +218,8 @@ class App(Viewer):
         self.hard_tree=self.tree(frame,{'case':'Formation','angle':'Entry','line':'Line','offset':'Offset','rate':'Jam rate','count':'Jams / tried'},[220,75,75,75,95,110],height=6)
 
     def clear_history(self,mode):
+        if self.busy:
+            self.status.set('Wait for the candidate test to finish before clearing history.'); return
         detail=('Delete unstarred candidates and their tests? Starred candidates and their tests stay.' if mode=='unstarred'
                 else 'Delete starred candidates and all their saved tests? Unstarred candidates stay.')
         if not messagebox.askyesno('Clear saved history',detail+'\n\nSearch checkpoints will also be cleared. This cannot be undone.'): return
@@ -233,6 +237,7 @@ class App(Viewer):
     def empty_selection(self):
         self.selected=None; self.selected_run=None; self.visible_results=[]; self.run_rows=[]; self.run_names=[]
         self.running=False; self.sim=None; self.play.configure(text='Play')
+        self.test_candidate_name.set('Select a candidate in the sidebar')
         self.title.set('No saved candidates'); self.candidate_meta.set(''); self.thumb.delete('all'); self.canvas.delete('all'); self.stats.set('')
         self.run_var.set(''); self.run_combo.configure(values=[]); self.show_run()
 
@@ -254,7 +259,7 @@ class App(Viewer):
             sessions=self.lib.sessions()
             if self.active_session not in {s['id'] for s in sessions}: self.active_session=sessions[0]['id'] if sessions else None
             if self.selected and not self.lib.candidate(self.selected): self.empty_selection()
-            self.update_session(); self.refresh_library()
+            self.update_session(); self.refresh_library(); self.refresh_saved_tests()
             if not self.selected:
                 rows=self.lib.candidates()
                 if rows: self.select_candidate(rows[0]['id'])
@@ -307,6 +312,7 @@ class App(Viewer):
     def select_candidate(self,cid):
         c=self.lib.candidate(cid)
         if not c: return
+        self.test_candidate_name.set('Test candidate · '+c['name'])
         self.selected=cid; self.title.set(('★ ' if c['starred'] or c['auto_star'] else '')+c['name']); g=Geometry(**c['geometry'])
         self.geo=g; self.settings=Settings(**c['settings']); self.case=Case(); self.sync_inputs(); self.reset(); self.running=False; self.play.configure(text='Play')
         self.candidate_meta.set(f'{c["stage"]}   •   Left {g.side("left")["angle"]:.1f}° / right {g.side("right")["angle"]:.1f}°   •   R{g.left_radius:.1f} / R{g.right_radius:.1f}   •   μ {self.settings.friction:g}   •   {c["session"][-6:]}')
@@ -377,7 +383,14 @@ class App(Viewer):
         self.job=threading.Thread(target=work,daemon=True); self.job.start()
     def poll(self):
         if self.read_only:
-            self.poll_external(); return
+            message=None; finished=False
+            while not self.events.empty():
+                event=self.events.get(); message=event.get('message',''); self.retest_text.set(message)
+                if event.get('retest_run') and self.selected==event.get('candidate'): self.selected_run=event['retest_run']
+                if event.get('finished'): self.busy=False; finished=True
+            self.poll_external(force=finished)
+            if message: self.status.set(message)
+            return
         changed=False
         while not self.events.empty():
             d=self.events.get(); self.status.set(d.get('message','')); self.progress_text.set(d.get('message','')); changed=True

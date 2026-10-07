@@ -321,6 +321,7 @@ class SearchRunner:
                     with self.lib.db:
                         self.lib.db.execute('UPDATE candidates SET auto_star=0 WHERE session=?',(self.sid,))
                         self.lib.db.executemany('UPDATE candidates SET auto_star=1 WHERE id=?',[(cid,) for cid in ranked[:3]])
+                    self.lib.save_hard_tests(self.sid)
                     s['phase']='complete'; self.save('complete')
                     self.emit(winner=s['winner'],message='Complete. Top validated candidates starred; baseline was eligible to win.')
             return s
@@ -328,6 +329,7 @@ class SearchRunner:
             self.save('error'); raise
         finally: self.lib.close(); lease.close()
     def pause(self):
+        self.lib.save_hard_tests(self.sid)
         self.save('paused'); self.lib.request_pause(self.sid,False)
         self.emit(message='Paused and saved. Resume continues missing tests without repeating completed results.')
         return self.state

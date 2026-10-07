@@ -48,6 +48,9 @@ class Library:
           id TEXT PRIMARY KEY, config TEXT, baseline TEXT, state TEXT, status TEXT, created REAL);
         CREATE TABLE IF NOT EXISTS controls(session TEXT PRIMARY KEY, pause INTEGER DEFAULT 0);
         CREATE TABLE IF NOT EXISTS progress(session TEXT PRIMARY KEY, payload TEXT);
+        CREATE TABLE IF NOT EXISTS saved_tests(
+          id TEXT PRIMARY KEY,name TEXT,case_data TEXT,source_session TEXT,
+          rank INTEGER,failures INTEGER,attempts INTEGER,settings TEXT,created REAL);
         CREATE TABLE IF NOT EXISTS training_votes(
           session TEXT, candidate TEXT, case_key TEXT, case_data TEXT, jam INTEGER, missed INTEGER,
           PRIMARY KEY(session,candidate,case_key));
@@ -119,7 +122,7 @@ class Library:
                    WHEN label='Broad survey' THEN 2
                    WHEN instr(label,' · screen ')=0 THEN 3 ELSE 4 END,
               expected DESC,id DESC) AS preference
-          FROM runs WHERE status IN ('complete','screened out') AND expected>0
+          FROM runs WHERE status IN ('complete','screened out') AND expected>0 AND label NOT LIKE 'Retest %'
             AND json_extract(summary,'$.cases')=expected)
           SELECT candidate,label,summary FROM scored WHERE preference=1''')
         scores={}
@@ -190,6 +193,30 @@ class Library:
                 'failures':r['failures'],'jams':r['failures'],'misses':r['misses'],
                 'rate':r['failures']/r['attempts']} for r in rows]
         return sorted(stats,key=lambda s:(-s['rate'],-s['failures'],s['key']))
+    def saved_tests(self):
+        if not self.db.execute("SELECT 1 FROM sqlite_master WHERE name='saved_tests'").fetchone(): return []
+        out=[]
+        for row in self.db.execute('SELECT * FROM saved_tests ORDER BY created DESC,source_session,rank,id'):
+            item=dict(row); item['case']=json.loads(item.pop('case_data')); item['settings']=json.loads(item['settings'])
+            out.append(item)
+        return out
+    def save_hard_tests(self,sid):
+        """Keep five deduplicated highest jam-rate training cases per session."""
+        session=self.state(sid); candidate=self.candidate(session['baseline'])
+        hard=[r for r in self.hardness(sid) if r['failures']>0][:5]; now=time.time()
+        with self.db:
+            self.db.execute('DELETE FROM saved_tests WHERE source_session=?',(sid,))
+            for rank,row in enumerate(hard,1):
+                self.db.execute('INSERT INTO saved_tests VALUES(?,?,?,?,?,?,?,?,?)',
+                  ('hard-'+sid+'-'+row['key'],f'Hard case #{rank}',encode(row['case']),sid,rank,
+                   row['failures'],row['attempts'],encode(candidate['settings']),now))
+        return len(hard)
+    def save_test(self,name,case,settings):
+        cid='custom-'+key([case,time.time_ns()])
+        with self.db:
+            self.db.execute('INSERT INTO saved_tests VALUES(?,?,?,?,?,?,?,?,?)',
+              (cid,name,encode(case),'',0,0,0,encode(settings),time.time()))
+        return cid
     def import_legacy(self,folder):
         folder=Path(folder)
         baseline=folder/'validation_report.json'

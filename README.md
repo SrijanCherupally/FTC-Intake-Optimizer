@@ -36,6 +36,18 @@ Use the candidate sidebar sort dropdown for **Best first**, **Worst first**, **N
 
 The **Training monitor** tab shows saved sessions, progress, and hardest jam cases. **Open validated winner** opens the winner only after fresh validation finishes. Automatic stars mark the top three validated candidates. Different test groups use different environments, so their scores should not be compared directly. Geometry SVG and run JSON/CSV exports remain available; the viewer cannot edit geometries or scores.
 
+## Test candidates after training
+
+Select a candidate, then open **Test candidate**. Change the formation, approach angle, ball-line angle, offset, spacing, stagger, or scatter seed. **Preview** opens the live simulation; **Run & save result** performs a full test and adds a separate **Retest** run under that candidate. The candidate's geometry and physics settings stay unchanged. Retests do not affect its training score, stars, or training failure-rate votes.
+
+The **Saved test history** table keeps the five highest jam-rate training configurations from each search, saved automatically on pause and completion. Rates count each geometry once, even if cached results appeared in multiple rounds; ties prefer more observed jams. Counts remain visible so a high rate from a small sample is identifiable. Only configurations with observed jams qualify, so a search may save fewer than five. These are training failures, not fresh validation cases fed back into training.
+
+Click a saved setup to load its values; **Run this top 5** tests the selected candidate against that setup's entire saved group. You can edit the loaded values before running a single test, or use **Save setup to history** to keep a custom configuration. **Save current search's top 5** snapshots the session selected in Training monitor. **Open results** shows the saved retests, which can be replayed like other candidate runs. Failure rates describe the original search, not the current candidate.
+
+Saved configurations include their source physics for reference, but retests always use the chosen candidate's physics. Saved setup history survives candidate/history cleanup so it remains reusable after training data is removed.
+
+![Candidate retests and saved high-failure setups](testing_preview.png)
+
 ## Clear saved data
 
 - **Clear history · keep stars** deletes unstarred candidates and their tests, keeping both manually starred and automatically starred candidates with all their saved tests. The list switches to starred candidates.
